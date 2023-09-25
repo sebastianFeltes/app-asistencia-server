@@ -18,6 +18,11 @@ export function tryLogin(req, res) {
       const match = bcrypt.compare(password, dbPassword);
 
       if (match) {
+        req.session.docente_id = rows[0].docente_id
+        req.session.docente_rol = rows[0].docente_rol
+        req.session.docente_dni = rows[0].docente_dni
+        req.session.docente_nombre = rows[0].docente_nombre
+        req.session.docente_apellido = rows[0].docente_apellido
         return res.json({ message: "loggeado" }).status(200);
       } else {
         return res.json({ message: "contraseña inválida!" }).status(400);
