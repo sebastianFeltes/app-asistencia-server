@@ -12,21 +12,24 @@ export function modificarDocente(req, res) {
     nro_dni,
     car_telefono,
     telefono,
+    car_tel_extra,
+    tel_extra,
     direccion,
     email,
     fecha_nac,
     nro_legajo,
     localidad,
     id_rol,
+    password
   } = req.body;
   try {
-    db.all(updateDocente, [nombre , tipo_dni , nro_dni, nro_legajo , id_rol , apellido , activo , fecha_nac, id_docente],(err)=>{
+    db.all(updateDocente, [nombre , tipo_dni , nro_dni, nro_legajo , id_rol, password , apellido , activo , fecha_nac, id_docente],(err)=>{
         if(err){
             console.log(err.message)
             return res.json({message:err.message}).status(500)
         }
         return res.json({message:"docente modificado"}).status(200)    })
-        db.all(updateDetalleDocente,[direccion , localidad , car_telefono , telefono, email, id_docente])
+        db.all(updateDetalleDocente,[direccion , localidad , car_telefono , telefono, car_tel_extra, tel_extra,email, id_docente])
   } catch (error) {
     console.log(error.message)
     return res.json({message:error.message}).status(400)
