@@ -1,9 +1,15 @@
-POST http://localhost:8080/usuarios HTTP/1.1
+POST http://localhost:8080/cursos HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sebastian"
+"nombre": "programacion",
+"docente":"sebastian",
+"dias":"l m v",
+"horarios":"12 a 14",
+"cantAlumnos":14,
+"idCurso" :1,
+"activo": true
 }
 
 ###
-GET http://localhost:8080/usuarios HTTP/1.1
+GET http://localhost:8080/cursos HTTP/1.1
