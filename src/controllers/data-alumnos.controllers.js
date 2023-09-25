@@ -3,13 +3,16 @@ import { selectAlumnos, updateAlumnos, updateDetalleAlumnos } from "../database/
 
 
 export function dataAlumnos(req, res) {
+  const {docente_id, docente_rol} = req.session;
     try{
+      if(docente_rol){
+        
+      }
         db.all(selectAlumnos, (err, rows)=>{
           if(err){
             console.log(err.message);
             return res.json({mensaje: err.message}).status(500)
           }
-          console.log(rows)
           return res.json(rows).status(200)
         });
 
@@ -22,10 +25,10 @@ export function modificarDataAlumno(req, res){
 const {
   id_alumno,
     nro_legajo,
-    nombre,
-    apellido,
     tipo_dni,
     nro_dni,
+    nombre,
+    apellido,
     direccion,
     localidad,
     car_telefono,
@@ -33,13 +36,13 @@ const {
     email,
     car_tel_extra,
     telefono_extra,
-    fotoc_dni,
     fotoc_analitico,
+    fotoc_dni,
     planilla_ins,
     activo
 }=req.body
   try {
-    db.all(updateAlumnos,[tipo_dni, 
+    db.all(updateAlumnos,[id_alumno, tipo_dni, 
       nro_dni, 
       nro_legajo, 
       nombre, 
@@ -47,6 +50,7 @@ const {
       activo], (err, rows)=>
     {
       if (err){
+        //error del servidor
         console.log(err);
         return res.json({ message:err.message}).status(500)
       }
@@ -54,6 +58,7 @@ const {
         //manejo del error 
         return res.json({message:"datos incompletos"}).status(400)
       }
+      //no encontro error modifica alumno
       return res.json({message:"alumno modificado"}).status(200)
 
     })
@@ -65,8 +70,8 @@ const {
       email,
       car_tel_extra,
       telefono_extra,
-      fotoc_dni,
       fotoc_analitico,
+      fotoc_dni,
       planilla_ins], (err, rows)=>
     {
       if (err){

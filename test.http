@@ -2,18 +2,24 @@ POST http://localhost:8080/data-alumnos HTTP/1.1
 content-type: application/json
 
 {
-    "legajo": 2,
-    "nombre": "ppe",
-    "apellido":"pepito" ,
-    "tipoDNI": "documento",
-    "dni":578978888 ,
-    "direccion":"calles" ,
-    "localidad":"berisso" ,
-    "codAreaTel":221 ,
-    "telefono": 54678,
-    "email": "emalito@gmail.com",
-    "codAreaTelExtra":376598,
-    "telefonoExtra": 76896
+
+    "tipo_dni": "DU",
+   "nro_dni": 35369842,
+    "nro_legajo":268,
+    "nombre": "Lalo",
+    "apellido":"Pepe" ,
+   "activo":true,
+   "direccion":"Calle Montevideo Nº 852" ,
+    "localidad": "Berisso" ,
+   "car_telefono":221 ,
+   "telefono": 52896341169,
+   "car_tel_extra": 221,
+   "telefono_extra": 2589658747,
+   "email": "algo@hjoo.com" ,
+   "fotoc_dni": true,
+   "fotoc_analitico":true,
+   "planilla_ins":false
+ 
 }
 
 ###
