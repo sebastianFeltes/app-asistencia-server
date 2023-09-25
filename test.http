@@ -6,4 +6,4 @@ content-type: application/json
 }
 
 ###
-GET http://localhost:8080/usuarios HTTP/1.1
+GET http://localhost:8080/docentes HTTP/1.1
