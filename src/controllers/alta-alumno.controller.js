@@ -25,6 +25,7 @@ export function tryAltaAlumno(req, res) {
     documentacionAnalitico,
     documentacionPlanilla,
   } = req.body;
+  const {docente_id, docente_rol} = req.body;
 
   //DB (INSERTAR NUEVO ALUMNO)
   try {
@@ -80,24 +81,8 @@ export function tryAltaAlumno(req, res) {
   }
 }
 
-//FUNCION TRAER CURSOS
-
-/* export function buscarCurso(req, res) {
-  try {
-    db.all(selectCurso, (err, rows) => {
-      if (err) {
-        console.log(err.message);
-        return res.json({ mensaje: err.message }).status(500);
-      }
-      return res.json(rows).status(200);
-    });
-  } catch (error) {
-    return res.json({ mensaje: err.message }).status(500);
-  }
-} */
 
 //FUNCION BUSCAR ALUMNOS
-
 export function traerAlumno(req, res) {
   const nro_dni = req.params.nro_dni;
   console.log(nro_dni)
@@ -114,3 +99,23 @@ export function traerAlumno(req, res) {
     return res.json(rows).status(500);
   }
 }
+
+//FUNCION TRAER CURSOS
+
+/* export function buscarCurso(req, res) {
+  try {
+    db.all(selectCurso, (err, rows) => {
+      if (err) {
+        console.log(err.message);
+        return res.json({ mensaje: err.message }).status(500);
+      }
+      return res.json(rows).status(200);
+    });
+  } catch (error) {
+    return res.json({ mensaje: err.message }).status(500);
+  }
+} */
+
+
+
+

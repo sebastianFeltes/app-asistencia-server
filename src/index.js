@@ -1,4 +1,5 @@
 import express, { json, urlencoded } from "express";
+import session from "express-session";
 import cors from "cors";
 import nuevoAlumnoRouter from "./routes/alta-alumno.routes.js";
 const app = express();
@@ -10,6 +11,15 @@ app.use(json());
 app.use(cors());
 
 app.use(urlencoded());
+
+app.set("trust proxy", 1);
+app.use(session({
+  secret: "black-cat",
+  resave: true,
+  saveUninitialized: true
+}));
+
+
 
 app.use(nuevoAlumnoRouter);
 
