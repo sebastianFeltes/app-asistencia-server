@@ -1,9 +1,20 @@
-POST http://localhost:8080/usuarios HTTP/1.1
+POST http://localhost:8080/data-alumnos HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sebastian"
+    "legajo": 2,
+    "nombre": "ppe",
+    "apellido":"pepito" ,
+    "tipoDNI": "documento",
+    "dni":578978888 ,
+    "direccion":"calles" ,
+    "localidad":"berisso" ,
+    "codAreaTel":221 ,
+    "telefono": 54678,
+    "email": "emalito@gmail.com",
+    "codAreaTelExtra":376598,
+    "telefonoExtra": 76896
 }
 
 ###
-GET http://localhost:8080/usuarios HTTP/1.1
+GET http://localhost:8080/data-alumnos HTTP/1.1
