@@ -2,7 +2,7 @@ import z from "zod";
 
 export const altaDocenteSchema = z.object({
     body: z.object({
-        nro_legajo:z.number(),
+
         tipo_dni: z.string().min(2),
         nro_dni: z.number().min(7),
         nombre: z.string(),

@@ -5,7 +5,6 @@ content-type: application/json
 "nombre": "el pepe", 
 "tipo_dni": "du", 
 "nro_dni": 3595487, 
-"nro_legajo": 1000, 
 "id_rol":2, 
 "password":"seba1234", 
 "apellido":"feltes", 
