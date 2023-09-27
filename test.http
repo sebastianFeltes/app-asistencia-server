@@ -1,9 +1,25 @@
-POST http://localhost:8080/usuarios HTTP/1.1
+POST http://localhost:8080/alta-alumno HTTP/1.1
 content-type: application/json
 
 {
-    "name": "sebastian"
+    "nombre": "pedro",
+    "apellido": "pepino",
+    "tipoDoc": "LC",
+    "dni": 49370265,
+    "direccion": "calle 234",
+    "localidad": "berisso",
+    "email": "pepe@gmail.com",
+    "tel": 6721564,
+    "telCar": 221,
+    "telCarExt":  221,
+    "telExt": 1234567,
+    "numLegajo": 123,
+    "documentacionDni": true,
+    "documentacionPlanilla": false,
+    "documentacionAnalitico":  false,
+    "curso": "Programacion"
 }
 
 ###
-GET http://localhost:8080/usuarios HTTP/1.1
+GET http://localhost:8080/alta-alumno/34568612 HTTP/1.1
+
