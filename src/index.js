@@ -6,6 +6,7 @@ import loginRouter from "./routes/login.routes.js";
 import nuevoAlumnoRouter from "./routes/alta-alumno.routes.js";
 import qrRouter from "./routes/gestionQR.routes.js";
 import nuevoDocentesRouter from "./routes/alta-docente.routes.js";
+import docentesRouter from "./routes/datos-docentes.routes.js";
 
 const app = express();
 
@@ -37,6 +38,8 @@ app.use(nuevoDocentesRouter);
 
 app.use(qrRouter);
 
+app.use(docentesRouter);
+
 app.listen(port, () => {
-	console.log(`Servidor escuchando en el puerto ${port}`);
+  console.log(`Servidor escuchando en el puerto ${port}`);
 });
