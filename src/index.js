@@ -1,6 +1,7 @@
 import express, { json, urlencoded } from "express";
+import cors from "cors"
 import session from "express-session";
-import cors from "cors";
+import alumnosRouter from "./routes/data-alumnos.routes.js";
 import loginRouter from "./routes/login.routes.js";
 import nuevoAlumnoRouter from "./routes/alta-alumno.routes.js";
 import qrRouter from "./routes/gestionQR.routes.js";
@@ -24,15 +25,17 @@ app.use(
 		resave: true,
 		saveUninitialized: true,
 	})
-);
+	);
+	
+app.use(alumnosRouter);
 
 app.use(loginRouter);
 
 app.use(nuevoAlumnoRouter);
 
-app.use(qrRouter);
-
 app.use(nuevoDocentesRouter);
+
+app.use(qrRouter);
 
 app.listen(port, () => {
 	console.log(`Servidor escuchando en el puerto ${port}`);
