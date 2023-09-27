@@ -4,7 +4,7 @@ import { selectAlumnoPorId } from "../database/queries.database.js";
 export async function buscarAlumnoPorId(req, res) {
 	const id = req.params.id;
 	try {
-		if (!id) res.status(400);
+		if (!id) return res.status(400);
 
 		// Obtener la fecha y hora actual
 		const fechaActual = new Date();
@@ -16,7 +16,7 @@ export async function buscarAlumnoPorId(req, res) {
 		const fechaActualFormateada = `${dia}/${mes}/${año}`;
 		// Obtener la hora actual (formato: HH:MM:SS)
 		//const horaActual = fechaActual.toTimeString().split(" ")[0];
-		const horaActual = "17:34:20";
+		const horaActual = "16:05:20";
 		db.all(selectAlumnoPorId, [id, horaActual], (err, rows) => {
 			if (err) {
 				console.log(err.message);
@@ -47,9 +47,11 @@ export async function buscarAlumnoPorId(req, res) {
 				}
 			}
 			const codAsistencia = rows[0] ? calcularCodigoAsistencia() : false;
+			
 			return res.json({
 				data_alumno_curso: rows[0],
 				cod_asistencia: codAsistencia,
+				hora_ingreso: horaActual
 			});
 		});
 	} catch (error) {
