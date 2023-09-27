@@ -25,3 +25,27 @@ GET http://localhost:8080/alta-alumno/34568612 HTTP/1.1
 
 ###
 GET http://localhost:8080/alumno/20 HTTP/1.1
+
+###
+POST http://localhost:8080/alta-docente HTTP/1.1
+content-type: application/json
+
+{
+"nombre": "el pepe", 
+"tipo_dni": "du", 
+"nro_dni": 3595487, 
+"id_rol":2, 
+"password":"seba1234", 
+"apellido":"feltes", 
+"activo": true,
+"direccion":"27 nro 3586",
+"localidad":"berisso", 
+"car_telefono":221, 
+"telefono":5115721, 
+"car_tel_extra":211, 
+"telefono_extra":22134455, 
+"email":"jikan@gmail.com" 
+}
+
+###
+GET http://localhost:8080/alta-docente HTTP/1.1
