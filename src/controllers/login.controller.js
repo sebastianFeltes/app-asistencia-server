@@ -1,11 +1,11 @@
 import { db } from "../database/conexion.database.js";
-import { selectDocente } from "../database/queries.database.js";
+import { selectDocentePorDni } from "../database/queries.database.js";
 import bcrypt from "bcrypt";
 
 export function tryLogin(req, res) {
 	const { nro_dni, password } = req.body;
 	try {
-		db.all(selectDocente, [nro_dni], (err, rows) => {
+		db.all(selectDocentePorDni, [nro_dni], (err, rows) => {
 			if (err) {
 				console.log(err);
 				return res.json({ message: err.message }).status(500);
@@ -23,6 +23,7 @@ export function tryLogin(req, res) {
 				req.session.docente_dni = rows[0].docente_dni;
 				req.session.docente_nombre = rows[0].docente_nombre;
 				req.session.docente_apellido = rows[0].docente_apellido;
+				console.log(req.session)
 				return res.json({ message: "loggeado" }).status(200);
 			} else {
 				return res.json({ message: "contraseña inválida!" }).status(400);

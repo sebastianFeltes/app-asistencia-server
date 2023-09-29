@@ -1,6 +1,6 @@
-import { updatetAsistAlumno } from "../database/queris.database";
+import { updatetAsistAlumno } from "../database/queries.database.js";
 
-export function asistenciaAlumnos (req,res){
+export function getAsist (req,res){
 
 const {id_asistencia} = req.body; 
 try {

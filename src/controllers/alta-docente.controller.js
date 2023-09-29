@@ -1,11 +1,11 @@
 
 import bcrypt from "bcrypt"
 import { db } from "../database/conexion.database.js";
-import { insertDetalleDocentes, insertDocentes, selectDocente } from "../database/queries.database.js";
+import { insertDetalleDocentes, insertDocentes, selectDocenteDetalleDocente } from "../database/queries.database.js";
 
 export function getDocentes(req, res) {
     try {
-        db.all(selectDocente, (err, rows) => {
+        db.all(selectDocenteDetalleDocente, (err, rows) => {
             if (err) {
                 console.log(err.message);
                 return res.json({ mensaje: err.message }).status(500)
@@ -25,7 +25,7 @@ export function altaDocentes(req, res) {
         direccion, localidad, car_telefono, telefono, car_tel_extra, telefono_extra, email } = req.body;
     const { docente_id, docente_rol } = req.session;
     try {
-        if (docente_rol > 2) {
+        if (docente_rol>=2) {
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync(password, salt);
             db.all(insertDocentes, [nombre, tipo_dni, nro_dni, id_rol, hash, apellido, activo], (err, rows) => {
@@ -51,7 +51,7 @@ export function altaDocentes(req, res) {
 
 
 
-            return res.json({ message: "alta docente!" }).status(200)
+            return res.json({ message: "Docente cargado en la base de datos" }).status(200)
         } else{
             return res.json({message: "Pedido Ya!!!"})
         }
