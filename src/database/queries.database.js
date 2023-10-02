@@ -8,7 +8,9 @@ WHERE AL.id_alumno = ? AND ? BETWEEN CUR.horario_inicio AND CUR.horario_final;`;
 
 export const insertAsistencia = `INSERT INTO asistencia() VALUES()`;
 
-export const selectCurso = `SELECT nombre FROM cursos`;
+export const selectCurso = `SELECT * FROM cursos`;
+export const mostrarCursos =`SELECT AL.id_curso as id_curso, AL.nombre as nombre   FROM cursos`;
+
 
 export const buscarAlumno = `SELECT AL.tipo_dni,AL.nro_legajo, AL.nombre,AL.apellido, DAL.id_alumno,DAL.direccion, DAL.localidad,DAL.car_telefono, DAL.telefono, DAL.car_tel_extra, DAL.telefono_extra, DAL.email, DAL.fotoc_dni, DAL.fotoc_analitico, DAL.planilla_ins FROM alumnos AL INNER JOIN detalle_alumnos DAL ON DAL.id_alumno = AL.id_alumno WHERE AL.nro_dni = ?`;
 
@@ -62,7 +64,14 @@ export const updateDetalleDocente = `UPDATE detalle_docentes SET  direccion =?, 
 
 export const selectCursos =`SELECT * FROM cursos CU; `;
 
-export const updateCursos = `UPDATE cursos SET nombre=?, horario=?, id_docente=?, activo=?,id_dia=?;`;
+export const updateCursos = `UPDATE cursos SET 
+     id_curso=?,
+     nombre=?,
+     horario_inicio=?,
+     horario_final=?,
+     activo=?,
+     id_docente=?
+      WHERE id_curso=?`;
 
 export const updatetAsistAlumno = 
 "UPDATE asistencia SET cod_asistencia = 4 WHERE id_asistencia = ?"
