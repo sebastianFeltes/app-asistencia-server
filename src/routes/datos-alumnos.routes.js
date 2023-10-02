@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { dataAlumnos, modificarDataAlumno } from "../controllers/data-alumnos.controllers.js";
+import { datosAlumnos, modificarDatosAlumno } from "../controllers/datos-alumnos.controllers.js";
 import { alumnosValidador } from "../middlewares/alumnosValidador.middlewares.js";
 import { modicacionAlumnos } from "../schemas/modificacion-alumnos.schemas.js";
 
 
 const alumnosRouter = Router();
 
-alumnosRouter.get("/data-alumnos", dataAlumnos);
-alumnosRouter.post("/data-alumnos",alumnosValidador (modicacionAlumnos), modificarDataAlumno);
+alumnosRouter.get("/datos-alumnos", datosAlumnos);
+alumnosRouter.post("/datos-alumnos",alumnosValidador (modicacionAlumnos), modificarDatosAlumno);
 
 export default alumnosRouter;
 
