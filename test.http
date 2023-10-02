@@ -24,7 +24,7 @@ content-type: application/json
 GET http://localhost:8080/alta-alumno/34568612 HTTP/1.1
 
 ###
-GET http://localhost:8080/alumno/20 HTTP/1.1
+GET http://localhost:8080/alumno/38 HTTP/1.1
 
 ###
 POST http://localhost:8080/alta-docente HTTP/1.1
@@ -97,3 +97,9 @@ content-type: application/json
 
 ###
 GET http://localhost:8080/cursos HTTP/1.1
+
+###
+GET http://localhost:8080/asistencia-alumnos HTTP/1.1
+
+###
+GET http://localhost:8080/modificar-asistencia/2 HTTP/1.1

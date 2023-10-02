@@ -8,5 +8,4 @@ const nuevoAlumnoRouter = Router();
 nuevoAlumnoRouter.post("/alta-alumno",alumnoValidator(altaAlumnoSchema),tryAltaAlumno);
 nuevoAlumnoRouter.get("/alta-alumno/:nro_dni",traerAlumno); 
 
-
 export default nuevoAlumnoRouter;
