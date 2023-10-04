@@ -1,7 +1,7 @@
 import express, { json, urlencoded } from "express";
 import cors from "cors"
 import session from "express-session";
-import alumnosRouter from "./routes/data-alumnos.routes.js";
+import alumnosRouter from "./routes/datos-alumnos.routes.js";
 import loginRouter from "./routes/login.routes.js";
 import nuevoAlumnoRouter from "./routes/alta-alumno.routes.js";
 import qrRouter from "./routes/gestionQR.routes.js";

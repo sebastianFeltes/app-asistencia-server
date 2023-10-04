@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { datosAlumnos, modificarDatosAlumno } from "../controllers/datos-alumnos.controllers.js";
+import { datosAlumnos, modificarDatosAlumno } from "../controllers/datos-alumnos.controller.js";
 import { alumnosValidador } from "../middlewares/alumnosValidador.middlewares.js";
 import { modicacionAlumnos } from "../schemas/modificacion-alumnos.schemas.js";
 
