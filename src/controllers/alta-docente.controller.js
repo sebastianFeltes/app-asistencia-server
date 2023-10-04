@@ -47,13 +47,12 @@ export function altaDocentes(req, res) {
                     }
                 })
 
-            });
-
+                }); 
 
 
             return res.json({ message: "Docente cargado en la base de datos" }).status(200)
         } else{
-            return res.json({message: "Pedido Ya!!!"})
+            return res.json({message: "recibido"})
         }
     }
     catch (error) {
