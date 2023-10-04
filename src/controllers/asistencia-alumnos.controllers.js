@@ -19,8 +19,9 @@ export function modificarAsistencia(req, res) {
 }
 
 export function getAsistencia(req, res) {
+  const id_curso = req.params.id;
   try {
-    db.all(selectAsistencia, (err, rows) => {
+    db.all(selectAsistencia,[id_curso], (err, rows) => {
       if (err) res.json({ message: err.message });
       res.json(rows);
     });

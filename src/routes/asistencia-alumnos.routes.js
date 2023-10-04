@@ -5,6 +5,6 @@ import { asistenciaAlumnosValitator } from "../middlewares/asistenciaAlumnosVali
  */
 const asistenciaRouter = Router(); 
 
-asistenciaRouter.get("/asistencia-alumnos", getAsistencia)
+asistenciaRouter.get("/asistencia-alumnos/:id", getAsistencia)
 asistenciaRouter.get("/modificar-asistencia/:id_asistencia", modificarAsistencia)
 export default asistenciaRouter;
