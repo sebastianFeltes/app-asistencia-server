@@ -87,11 +87,11 @@ content-type: application/json
 
 {
 "nombre": "programacion",
-"docente":"sebastian",
-"dias":"l m v",
-"horarios":"12 a 14",
-"cantAlumnos":14,
-"idCurso" :1,
+"id_docente":1,
+" horario_final":12,
+"horario_inicio":32,
+
+"id_curso" :2,
 "activo": true
 }
 
