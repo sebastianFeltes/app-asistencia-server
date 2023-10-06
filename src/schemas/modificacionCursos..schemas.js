@@ -1,0 +1,12 @@
+import z from "zod";
+
+export const modificacionCursosSchema = z.object({
+  body: z.object({
+     id_curso: z.number(), 
+    nombre: z.string().min(3),
+    id_docente: z.number(),
+    horario_inicio: z.number(),
+    horario_final: z.number(),
+    activo: z.boolean(), 
+  }),
+});

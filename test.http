@@ -1,4 +1,61 @@
+<<<<<<< HEAD
 POST http://localhost:8080/datos-alumnos HTTP/1.1
+=======
+POST http://localhost:8080/alta-alumno HTTP/1.1
+content-type: application/json
+
+{
+    "nombre": "pedro",
+    "apellido": "pepino",
+    "tipoDoc": "LC",
+    "dni": 49370265,
+    "direccion": "calle 234",
+    "localidad": "berisso",
+    "email": "pepe@gmail.com",
+    "tel": 6721564,
+    "telCar": 221,
+    "telCarExt":  221,
+    "telExt": 1234567,
+    "numLegajo": 123,
+    "documentacionDni": true,
+    "documentacionPlanilla": false,
+    "documentacionAnalitico":  false,
+    "curso": "Programacion"
+}
+
+###
+GET http://localhost:8080/alta-alumno/34568612 HTTP/1.1
+
+###
+GET http://localhost:8080/alumno/38 HTTP/1.1
+
+###
+POST http://localhost:8080/alta-docente HTTP/1.1
+content-type: application/json
+
+{
+"nombre": "el pepe", 
+"tipo_dni": "du", 
+"nro_dni": 3595487, 
+"id_rol":2, 
+"password":"seba1234", 
+"apellido":"feltes", 
+"activo": true,
+"direccion":"27 nro 3586",
+"localidad":"berisso", 
+"car_telefono":221, 
+"telefono":5115721, 
+"car_tel_extra":211, 
+"telefono_extra":22134455, 
+"email":"jikan@gmail.com" 
+}
+
+###
+GET http://localhost:8080/alta-docente HTTP/1.1
+
+###
+POST http://localhost:8080/data-alumnos HTTP/1.1
+>>>>>>> 4a1ce636680d229d014b6b2db41f9552e2d6f530
 content-type: application/json
 
 {
@@ -23,4 +80,34 @@ content-type: application/json
 }
 
 ###
+<<<<<<< HEAD
 GET http://localhost:8080/datos-alumnos HTTP/1.1
+=======
+GET http://localhost:8080/data-alumnos HTTP/1.1
+
+###
+GET http://localhost:8080/docentes HTTP/1.1
+
+###
+POST http://localhost:8080/cursos HTTP/1.1
+content-type: application/json
+
+{
+"nombre": "programacion",
+"id_docente":1,
+" horario_final":12,
+"horario_inicio":32,
+
+"id_curso" :2,
+"activo": true
+}
+
+###
+GET http://localhost:8080/cursos HTTP/1.1
+
+###
+GET http://localhost:8080/asistencia-alumnos/2 HTTP/1.1
+
+###
+GET http://localhost:8080/modificar-asistencia/2 HTTP/1.1
+>>>>>>> 4a1ce636680d229d014b6b2db41f9552e2d6f530
