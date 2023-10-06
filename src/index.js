@@ -1,6 +1,6 @@
 import express, { json, urlencoded } from "express";
 import cors from "cors"
-import alumnosRouter from "./routes/data-alumnos.routes.js";
+import alumnosRouter from "./routes/datos-alumnos.routes.js";
 import session from "express-session";
 const app = express();
 const port = 8080;
