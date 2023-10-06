@@ -3,11 +3,20 @@ import {
   buscarAlumno,
   insertAlumno,
   insertDetalleAlumno,
-  traerCurso
+  mostrarCursos,
 } from "../database/queries.database.js";
 
 //FUNCION INSERTAR UN NUEVO ALUMNO
 export function tryAltaAlumno(req, res) {
+  const { docente_id, docente_rol } = req.session;
+  try {
+    if(true){
+      
+    }
+    
+  } catch (error) {
+    
+  }
   const {
     tipoDoc,
     dni,
@@ -113,7 +122,7 @@ export function traerAlumno(req, res) {
 
 export function buscarCurso(req, res) {
   try {
-    db.all(traerCurso, (err, rows) => {
+    db.all(mostrarCursos, (err, rows) => {
       if (err) {
         console.log(err.message);
         return res.json({ mensaje: err.message }).status(500);
