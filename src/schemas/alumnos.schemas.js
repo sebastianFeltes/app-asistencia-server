@@ -15,9 +15,9 @@ export const altaAlumnoSchema = z.object({
     telCarExt: z.number().min(3),
     telExt: z.number().min(7),
     numLegajo: z.number(),
-    documentacionDni: z.boolean(),
-    documentacionPlanilla: z.boolean(),
-    documentacionAnalitico: z.boolean(),
+    documentacionDni: z.number(),
+    documentacionPlanilla: z.number(),
+    documentacionAnalitico: z.number(),
     curso: z.string(),
   }),
 });
