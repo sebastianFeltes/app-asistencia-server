@@ -8,7 +8,7 @@ WHERE AL.id_alumno = ? AND ? BETWEEN CUR.horario_inicio AND CUR.horario_final;`;
 
 export const insertAsistencia = `INSERT INTO asistencia() VALUES()`;
 
-export const selectCurso = `SELECT nombre FROM cursos`;
+export const traerCurso = `SELECT id_curso ,nombre FROM cursos WHERE activo="true"`;
 
 export const buscarAlumno = `SELECT AL.tipo_dni,AL.nro_legajo, AL.nombre,AL.apellido, DAL.id_alumno,DAL.direccion, DAL.localidad,DAL.car_telefono, DAL.telefono, DAL.car_tel_extra, DAL.telefono_extra, DAL.email, DAL.fotoc_dni, DAL.fotoc_analitico, DAL.planilla_ins FROM alumnos AL INNER JOIN detalle_alumnos DAL ON DAL.id_alumno = AL.id_alumno WHERE AL.nro_dni = ?`;
 

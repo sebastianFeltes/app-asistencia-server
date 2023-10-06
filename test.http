@@ -21,7 +21,7 @@ content-type: application/json
 }
 
 ###
-GET http://localhost:8080/alta-alumno/34568612 HTTP/1.1
+GET http://localhost:8080/alta-alumno HTTP/1.1
 
 ###
 GET http://localhost:8080/alumno/20 HTTP/1.1

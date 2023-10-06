@@ -3,7 +3,7 @@ import {
   buscarAlumno,
   insertAlumno,
   insertDetalleAlumno,
-  /* selectCurso, */
+  traerCurso
 } from "../database/queries.database.js";
 
 //FUNCION INSERTAR UN NUEVO ALUMNO
@@ -25,7 +25,16 @@ export function tryAltaAlumno(req, res) {
     documentacionAnalitico,
     documentacionPlanilla,
   } = req.body;
-  const {docente_id, docente_rol} = req.body;
+  /* const {docente_id, docente_rol} = req.body;
+
+  try {
+    if(docente_id==1 || docente_id==2){
+
+    }
+    
+  } catch (error) {
+    
+  } */
 
   //DB (INSERTAR NUEVO ALUMNO)
   try {
@@ -102,19 +111,19 @@ export function traerAlumno(req, res) {
 
 //FUNCION TRAER CURSOS
 
-/* export function buscarCurso(req, res) {
+export function buscarCurso(req, res) {
   try {
-    db.all(selectCurso, (err, rows) => {
+    db.all(traerCurso, (err, rows) => {
       if (err) {
         console.log(err.message);
         return res.json({ mensaje: err.message }).status(500);
       }
       return res.json(rows).status(200);
     });
-  } catch (error) {
+  } catch (error) { 
     return res.json({ mensaje: err.message }).status(500);
   }
-} */
+}
 
 
 
