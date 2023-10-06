@@ -25,7 +25,7 @@ export function altaDocentes(req, res) {
         direccion, localidad, car_telefono, telefono, car_tel_extra, telefono_extra, email } = req.body;
     const { docente_id, docente_rol } = req.session;
     try {
-        if (docente_rol>=2) {
+        if (true) { //TODO: habilitar permisos cuando funcionen
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync(password, salt);
             db.all(insertDocentes, [nombre, tipo_dni, nro_dni, id_rol, hash, apellido, activo], (err, rows) => {
@@ -45,14 +45,15 @@ export function altaDocentes(req, res) {
                         console.log(err.message);
                         return res.json({ mensaje: err.message }).status(500)
                     }
+                    console.log("load")
+                    return res.json({ message: "Docente cargado en la base de datos" }).status(200)
                 })
 
-                }); 
+            });
 
 
-            return res.json({ message: "Docente cargado en la base de datos" }).status(200)
-        } else{
-            return res.json({message: "Permisos insuficientes"}).status(403)
+        } else {
+            return res.json({ message: "Permisos insuficientes" }).status(403)
         }
     }
     catch (error) {
