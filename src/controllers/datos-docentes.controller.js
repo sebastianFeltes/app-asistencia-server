@@ -67,6 +67,7 @@ export function getDocentes(req, res) {
         console.log(err.message);
         return res.json({ mensaje: err.message }).status(500);
       }
+      console.log(rows)
       return res.json(rows).status(200);
     });
   } catch (error) {

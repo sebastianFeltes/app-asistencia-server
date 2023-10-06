@@ -10,7 +10,7 @@ export function getCursos(req, res) {
           console.log(err);
           return res.json({ message: err.message });
         }
-        console.log(rows);
+/*         console.log(rows); */
         return res.json(rows);
       });
     }
