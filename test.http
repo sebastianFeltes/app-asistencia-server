@@ -24,7 +24,7 @@ content-type: application/json
 GET http://localhost:8080/alta-alumno HTTP/1.1
 
 ###
-GET http://localhost:8080/alumno/20 HTTP/1.1
+GET http://localhost:8080/alumno/38 HTTP/1.1
 
 ###
 POST http://localhost:8080/alta-docente HTTP/1.1
@@ -87,13 +87,19 @@ content-type: application/json
 
 {
 "nombre": "programacion",
-"docente":"sebastian",
-"dias":"l m v",
-"horarios":"12 a 14",
-"cantAlumnos":14,
-"idCurso" :1,
+"id_docente":1,
+" horario_final":12,
+"horario_inicio":32,
+
+"id_curso" :2,
 "activo": true
 }
 
 ###
 GET http://localhost:8080/cursos HTTP/1.1
+
+###
+GET http://localhost:8080/asistencia-alumnos/2 HTTP/1.1
+
+###
+GET http://localhost:8080/modificar-asistencia/2 HTTP/1.1

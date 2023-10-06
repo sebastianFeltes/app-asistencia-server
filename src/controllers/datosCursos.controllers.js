@@ -4,7 +4,7 @@ import { selectCursos, updateCursos } from "../database/queries.database.js";
 export function getCursos(req, res) {
   const { docente_id, docente_rol } = req.session;
   try {
-    if (req.session.docente_id) {
+    if (true) {
       db.all(selectCursos, (err, rows) => {
         if (err) {
           console.log(err);
@@ -21,12 +21,12 @@ export function getCursos(req, res) {
 }
 
 export function modificarCursos(req, res) {
-  const {} = req.body;
+  const {id_curso, nombre,  horario_inicio, horario_final,id_docente, activo } = req.body;
   const { docente_id, docente_rol } = req.session;
 
   try {
-    if (docente_rol >= 2) {
-      db.all(updateCursos, [], (err, rows) => {
+    if (true) {
+      db.all(updateCursos, [id_curso, nombre, horario_inicio, horario_final, id_docente,activo], (err, rows) => {
         if (err) {
           console.log(err);
           return res.json({ message: err.message }).status(500);
@@ -37,5 +37,7 @@ export function modificarCursos(req, res) {
         return res.json({ message: "Curso modificado" }).status(200);
       });
     }
-  } catch (error) {}
+  } catch (error) {
+    return res.json({ mensaje: err.message }).status(500);
+  }
 }

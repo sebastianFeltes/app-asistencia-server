@@ -13,8 +13,6 @@ z.object({
         telefono: z.number().min(7),
         direccion: z.string().min(5),
         email: z.string().min(15),
-        fecha_nac: z.string().min(6) ,
-        nro_legajo:z.number().min(2),
         localidad: z.number().min(4),
         id_rol: z.string().min(5) 
      /*    check: check,

@@ -9,5 +9,4 @@ nuevoAlumnoRouter.post("/alta-alumno",alumnoValidator(altaAlumnoSchema),tryAltaA
 nuevoAlumnoRouter.get("/alta-alumno/:nro_dni",traerAlumno); 
 nuevoAlumnoRouter.get("/alta-alumno",buscarCurso); 
 
-
 export default nuevoAlumnoRouter;
