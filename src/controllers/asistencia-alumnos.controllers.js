@@ -30,4 +30,6 @@ export function getAsistencia(req, res) {
       return res.json({ message: error.message });
     }
   }
+
+
 }
