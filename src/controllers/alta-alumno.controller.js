@@ -103,7 +103,6 @@ export function tryAltaAlumno(req, res) {
 //FUNCION BUSCAR ALUMNOS
 export function traerAlumno(req, res) {
   const nro_dni = req.params.nro_dni;
-  console.log(nro_dni)
   try {
     db.all(buscarAlumno, [nro_dni] ,(err, rows) => {
       if (err) {
