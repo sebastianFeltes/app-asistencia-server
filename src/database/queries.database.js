@@ -73,7 +73,7 @@ export const updateDetalleDocente = `UPDATE detalle_docentes SET  direccion =?, 
 export const selectCursos = `SELECT * FROM cursos CU; `;
 
 export const updateCursos = `UPDATE cursos SET 
-     id_curso=?,
+     
      nombre=?,
      horario_inicio=?,
      horario_final=?,
