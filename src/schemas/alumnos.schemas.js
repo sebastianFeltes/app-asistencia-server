@@ -7,6 +7,7 @@ export const altaAlumnoSchema = z.object({
     apellido: z.string().min(4),
     tipoDoc: z.string().min(2),
     dni: z.number().min(7),
+    fechaNac: z.string().min(7),
     direccion: z.string(),
     localidad: z.string(),
     email: z.string().email(),

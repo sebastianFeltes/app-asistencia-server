@@ -9,6 +9,7 @@ export const modicacionAlumnos = z.object({
     nombre: z.string().min(3),
     apellido: z.string().min(3),
     activo:z.number(),
+    fecha_nac:z.string(),
     direccion: z.string(),
     localidad: z.string(),
     car_telefono: z.number().min(2).int(),
