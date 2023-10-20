@@ -18,6 +18,6 @@ export const altaAlumnoSchema = z.object({
     documentacionDni: z.boolean(),
     documentacionPlanilla: z.boolean(),
     documentacionAnalitico: z.boolean(),
-    curso: z.string(),
+    cursos: z.array(),
   }),
 });
