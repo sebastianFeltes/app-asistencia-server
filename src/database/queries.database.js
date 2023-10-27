@@ -70,7 +70,8 @@ export const updateDocente = `UPDATE docentes SET nombre =?, tipo_dni =?, nro_dn
 
 export const updateDetalleDocente = `UPDATE detalle_docentes SET  direccion =?, localidad =?, car_telefono =?, telefono =?, car_tel_extra=?, telefono_extra =?, email =? WHERE id_docente =?`;
 
-export const selectCursos = `SELECT * FROM cursos CU; `;
+export const selectCursos = `SELECT * FROM cursos CU  ; `;
+export const selectDias =  `SELECT * FROM dias DI`;
 
 export const updateCursos = `UPDATE cursos SET 
      

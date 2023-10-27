@@ -1,6 +1,22 @@
 import { db } from "../database/conexion.database.js";
-import { selectCursos, updateCursos } from "../database/queries.database.js";
+import { selectCursos, updateCursos, selectDias } from "../database/queries.database.js";
 
+export function getDias(req, res){
+  try {
+         db.all(selectDias, (err, rows) => {
+        if (err) {
+          console.log(err);
+          return res.json({ message: err.message });
+        }
+         console.log(rows); 
+        return res.json(rows);
+      });
+    
+  } catch (error) {
+    console.log(error.message);
+    return res.json({ message: error.message });
+  }
+}
 export function getCursos(req, res) {
   const { docente_id, docente_rol } = req.session;
   try {
