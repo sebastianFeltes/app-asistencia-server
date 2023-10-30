@@ -16,6 +16,7 @@ export const altaDocenteSchema = z.object({
         telefono_extra: z.number().min(7),
         id_rol: z.number(),
         email: z.string().email(),
-        activo: z.boolean()
+        activo: z.boolean(),
+        Fecha_nac: z.number(),
     })
 });
