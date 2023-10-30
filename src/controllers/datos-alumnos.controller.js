@@ -40,12 +40,13 @@ export function modificarDatosAlumno(req, res) {
     fotoc_dni,
     planilla_ins,
     activo,
+    fecha_nac,
     id_alumno,
   } = req.body;
   try {
     db.all(
       updateAlumnos,
-      [tipo_dni, nro_dni, nro_legajo, nombre, apellido, activo, id_alumno],
+      [ tipo_dni, nro_dni, nro_legajo, nombre, apellido, activo, fecha_nac, id_alumno ],
       (err, rows) => {
         if (err) {
           //error del servidor
