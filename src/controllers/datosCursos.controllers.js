@@ -8,7 +8,7 @@ export function getDias(req, res){
           console.log(err);
           return res.json({ message: err.message });
         }
-         console.log(rows); 
+         /* console.log(rows);  */
         return res.json(rows);
       });
     
@@ -57,9 +57,9 @@ export function modificarCursos(req, res) {
           console.log(err);
           return res.json({ message: err.message }).status(500);
         }console.log("query")
-        /* if (rows.length == 0) {
+         if (rows.length == 0) {
           return res.json({ message: "datos invalidos" }).status(400);
-        } */
+        } 
         return res.json({ message: "Curso modificado" }).status(200);
       }
     );
