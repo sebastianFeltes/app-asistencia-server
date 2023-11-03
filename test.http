@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+POST http://localhost:8080/datos-alumnos HTTP/1.1
+=======
 POST http://localhost:8080/alta-alumno HTTP/1.1
 content-type: application/json
 
@@ -52,6 +55,7 @@ GET http://localhost:8080/alta-docente HTTP/1.1
 
 ###
 POST http://localhost:8080/data-alumnos HTTP/1.1
+>>>>>>> 4a1ce636680d229d014b6b2db41f9552e2d6f530
 content-type: application/json
 
 {
@@ -76,6 +80,9 @@ content-type: application/json
 }
 
 ###
+<<<<<<< HEAD
+GET http://localhost:8080/datos-alumnos HTTP/1.1
+=======
 GET http://localhost:8080/data-alumnos HTTP/1.1
 
 ###
@@ -103,3 +110,4 @@ GET http://localhost:8080/asistencia-alumnos/2 HTTP/1.1
 
 ###
 GET http://localhost:8080/modificar-asistencia/2 HTTP/1.1
+>>>>>>> 4a1ce636680d229d014b6b2db41f9552e2d6f530
