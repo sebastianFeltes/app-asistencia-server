@@ -72,6 +72,7 @@ export function tryAltaAlumno(req, res) {
               }
               return res.json("recibido").status(200);
             }
+            
           );
         });
       }

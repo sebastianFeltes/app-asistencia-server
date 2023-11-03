@@ -1,4 +1,5 @@
 import express, { json, urlencoded } from "express";
+import 'dotenv/config'
 import cors from "cors"
 import session from "express-session";
 import alumnosRouter from "./routes/datos-alumnos.routes.js";
@@ -12,7 +13,7 @@ import asistenciaRouter from "./routes/asistencia-alumnos.routes.js";
 
 const app = express();
 
-const port = 8080;
+const port = process.env.PORT;
 
 app.use(cors());
 

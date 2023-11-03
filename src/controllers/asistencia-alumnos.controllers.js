@@ -21,7 +21,7 @@ export function getAsistencia(req, res) {
 	try {
 		db.all(selectAsistencia, [id_curso], (err, rows) => {
 			if (err) res.json({ message: err.message });
-			console.log(rows);
+			
 			res.json(rows);
 		});
 	} catch (error) {
