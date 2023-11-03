@@ -28,17 +28,7 @@ export function tryAltaAlumno(req, res) {
     planilla_ins,
     cursos
   } = req.body;
-  /*  const {docente_id, docente_rol} = req.body;
-
-  try {
-    if(true){
-
-    }
-    
-  } catch (error) {
-    
-  }
- */
+  
 
   //TODO:DB (INSERTAR NUEVO ALUMNO)
   try {
@@ -100,6 +90,8 @@ export function tryAltaAlumno(req, res) {
       }
     );
   } catch (error) {
+    console.log("error")
+    console.log(error)
     return res.json({ mensaje: "error en el servidor" }).status(500);
   }
 }

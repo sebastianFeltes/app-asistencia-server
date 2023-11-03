@@ -20,7 +20,6 @@ export const modicacionAlumnos = z.object({
     fotoc_dni: z.number(),
     fotoc_analitico:z.number(),
     planilla_ins:z.number(),
- 
 
   }),
 });

@@ -18,6 +18,5 @@ export const altaDocenteSchema = z.object({
         id_rol: z.number(),
         email: z.string().email(),
         activo: z.boolean(),
-        Fecha_nac: z.number(),
     })
 });

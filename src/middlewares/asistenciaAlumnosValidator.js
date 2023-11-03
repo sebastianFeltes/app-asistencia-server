@@ -13,6 +13,7 @@ export const asistenciaAlumnosValitator = (schema) => (req,res,next)=> {
                 next();
             } catch (error) {
                 if(error instanceof ZodError ) {
+                    
                    return res.status(400).json(
                     error.issues.map((issue)=> ({
                      path: issue.path,

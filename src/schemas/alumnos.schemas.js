@@ -22,6 +22,6 @@ export const altaAlumnoSchema = z.object({
     fotoc_dni: z.number(),
     planilla_ins: z.number(),
     fotoc_analitico: z.number(),
-    curso: z.string()
+    
   }),
 });
