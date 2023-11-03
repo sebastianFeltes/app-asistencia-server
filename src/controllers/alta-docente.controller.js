@@ -7,7 +7,7 @@ export function getDocentes(req, res) {
     try {
         db.all(selectDocenteDetalleDocente, (err, rows) => {
             if (err) {
-                console.log(err.message);
+                console.log(err.message);       
                 return res.json({ mensaje: err.message }).status(500)
             }
             return res.json(rows).status(200)
@@ -28,7 +28,7 @@ export function altaDocentes(req, res) {
         if (rol_creador>=1) { //TODO: habilitar permisos cuando funcionen
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync(password, salt);
-            db.all(insertDocentes, [nombre, tipo_dni, nro_dni, id_rol, hash, apellido,fecha_nac, activo], (err, rows) => {
+            db.all(insertDocentes, [nombre, tipo_dni, nro_dni, id_rol, hash, apellido, activo, Fecha_nac], (err, rows) => {
                 if (err) {
                     console.log(err.message);
                     return res.json({ mensaje: err.message }).status(500)
