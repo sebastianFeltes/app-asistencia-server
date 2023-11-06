@@ -21,14 +21,14 @@ export function getDocentes(req, res) {
 
 export function altaDocentes(req, res) {
    
-    const { rol_creador,nombre, tipo_dni, nro_dni, id_rol, password, apellido,fecha_nac, activo,
+    const { rol_creador,nombre, tipo_dni, nro_dni, id_rol, password, apellido,fecha_nac,nro_legajo, activo,
         direccion, localidad, car_telefono, telefono, car_tel_extra, telefono_extra, email } = req.body;
     /* const { docente_id, docente_rol } = req.session; */
     try {
         if (rol_creador>=1) { //TODO: habilitar permisos cuando funcionen
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync(password, salt);
-            db.all(insertDocentes, [nombre, tipo_dni, nro_dni, id_rol, hash, apellido, activo, fecha_nac], (err, rows) => {
+            db.all(insertDocentes, [nombre, tipo_dni, nro_dni, id_rol, hash, apellido, activo, fecha_nac,nro_legajo], (err, rows) => {
                 if (err) {
                     console.log(err.message);
                     return res.json({ mensaje: err.message }).status(500)

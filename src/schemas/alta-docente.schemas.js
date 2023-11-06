@@ -8,6 +8,7 @@ export const altaDocenteSchema = z.object({
         nombre: z.string(),
         apellido: z.string(),
         fecha_nac:z.string(),
+        nro_legajo: z.number(),
         password: z.string().min(8),
         direccion: z.string(),
         localidad: z.string(),
