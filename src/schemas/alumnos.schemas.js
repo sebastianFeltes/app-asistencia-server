@@ -20,7 +20,6 @@ export const altaAlumnoSchema = z.object({
     fotoc_analitico: z.number(),
     fotoc_dni: z.number(),
     planilla_ins: z.number(),
-   
   }),
 });
 /* 

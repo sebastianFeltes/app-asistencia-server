@@ -20,6 +20,7 @@ export function datosAlumnos(req, res) {
   }
 }
 export function modificarDatosAlumno(req, res) {
+  console.log("controller");
   console.log(req.body);
   const {
     activo,
@@ -57,6 +58,7 @@ export function modificarDatosAlumno(req, res) {
       (err, rows) => {
         if (err) {
           //error del servidor
+          console.log("1st query")
           console.log(err);
           return res.json({ message: err.message }).status(500);
         }
@@ -75,12 +77,13 @@ export function modificarDatosAlumno(req, res) {
             planilla_ins,
             id_alumno,
           ],
-          (err, rows) => {
+          (err) => {
             if (err) {
               console.log(err);
               return res.json({ message: err.message }).status(500);
             }
-            return res.json({ message: "alumno modificado" }).status(200);
+            console.log("response")
+            return res.json({ message: "alumno modificado" });
           }
         );
       }
