@@ -22,11 +22,12 @@ export function modificarDocente(req, res) {
     email,
     localidad,
     id_rol,
+    fecha_nac
   } = req.body;
   try {
     db.all(
       updateDocente,
-      [nombre, tipo_dni, nro_dni, id_rol, apellido, activo, id_docente],
+      [nombre, tipo_dni, nro_dni, id_rol, apellido, activo,fecha_nac, id_docente],
       (err) => {
         if (err) {
           console.log(err.message);
