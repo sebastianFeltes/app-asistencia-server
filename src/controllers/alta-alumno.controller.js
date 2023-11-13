@@ -4,6 +4,8 @@ import {
   insertAlumno,
   insertDetalleAlumno,
   mostrarCursos,
+  updateAltaAlumnos,
+  updateDetalleAlumnos,
 } from "../database/queries.database.js";
 
 //TODO:FUNCION INSERTAR UN NUEVO ALUMNO
@@ -149,7 +151,7 @@ export function modificarDatosAltaAlumno(req, res) {
   } = req.body;
   try {
     db.all(
-      updateAlumnos,
+      updateAltaAlumnos,
       [tipo_dni, nro_dni, nro_legajo, nombre, apellido, fecha_nac, id_alumno],
       (err, rows) => {
         if (err) {
@@ -180,13 +182,13 @@ export function modificarDatosAltaAlumno(req, res) {
             cursos.map((e) => {
               db.all(
                 "INSERT INTO rel_curso_alumnos (id_alumno, id_curso) VALUES (?,?)",
-                [alumno_id, e],
+                [id_alumno, e],
                 (err, rows) => {
                   if (err) res.json({ mensaje: err.message });
                 }
               );
             });
-            return res.json({ message: "alumno modificado" }).status(200);
+            return res.json("alumno modificado").status(200);
           }
         );
       }

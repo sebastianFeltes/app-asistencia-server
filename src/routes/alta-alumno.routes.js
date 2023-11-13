@@ -6,7 +6,7 @@ import { alumnoValidator } from "../middlewares/alumnoValidator.middlewares.js";
 
 const nuevoAlumnoRouter = Router();
 nuevoAlumnoRouter.post("/app/alta-alumno",alumnoValidator(altaAlumnoSchema),tryAltaAlumno);
-nuevoAlumnoRouter.post("/app/alta-alumno",alumnoValidator(altaAlumnoSchema),modificarDatosAltaAlumno);
+nuevoAlumnoRouter.post("/app/alta-alumno/:id_alumno",alumnoValidator(altaAlumnoSchema),modificarDatosAltaAlumno);
 nuevoAlumnoRouter.get("/app/alta-alumno/:nro_dni",traerAlumno); 
 nuevoAlumnoRouter.get("/app/alta-alumno",buscarCurso); 
 

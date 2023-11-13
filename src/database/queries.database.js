@@ -24,6 +24,16 @@ export const insertAlumno = `INSERT INTO alumnos (tipo_dni,nro_dni,nro_legajo,no
 
 export const insertDetalleAlumno = `INSERT INTO detalle_alumnos (id_alumno,direccion, localidad,car_telefono, telefono, car_tel_extra, telefono_extra, email, fotoc_dni, fotoc_analitico, planilla_ins ) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
 
+export const updateAltaAlumnos = `UPDATE alumnos SET 
+tipo_dni=?, 
+nro_dni=?, 
+nro_legajo=?, 
+nombre=?, 
+apellido=?, 
+fecha_nac=?
+WHERE id_alumno=?;`;
+
+
 export const selectDocenteDetalleDocente = `SELECT * FROM docentes DO
 INNER JOIN detalle_docentes DAL ON DO.id_docente = DAL.id_docente
 INNER JOIN roles ROL ON ROL.id_rol = DO.id_rol;
