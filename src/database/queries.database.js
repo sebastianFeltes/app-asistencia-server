@@ -78,7 +78,9 @@ export const updateCursos = `UPDATE cursos SET
      horario_inicio=?,
      horario_final=?,
      activo=?,
-     id_docente=?
+     id_docente=?,
+     fecha_inicio=?,
+     fecha_finalizacion=?,
       WHERE id_curso=?`;
 
 export const updatetAsistAlumno = "UPDATE asistencia SET cod_asistencia = 4 WHERE id_asistencia = ?";

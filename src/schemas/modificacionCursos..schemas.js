@@ -7,6 +7,8 @@ export const modificacionCursosSchema = z.object({
     id_docente: z.number(),
     horario_inicio: z.string().min(2),
     horario_final: z.string().min(2),
+    fecha_inicio:z.date(),
+    fecha_finalizacion:z.date(),
     activo: z.boolean(), 
   }),
 });
