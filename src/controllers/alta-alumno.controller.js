@@ -17,6 +17,7 @@ export function tryAltaAlumno(req, res) {
     nro_legajo,
     nombre,
     apellido,
+    activo,
     direccion,
     localidad,
     fecha_nac,
@@ -35,7 +36,7 @@ export function tryAltaAlumno(req, res) {
   try {
     db.run(
       insertAlumno,
-      [tipo_dni, nro_dni, nro_legajo, nombre, apellido, fecha_nac],
+      [tipo_dni, nro_dni, nro_legajo, nombre, apellido,activo, fecha_nac],
       (err, rows) => {
         if (err) {
           console.log(err.message);
