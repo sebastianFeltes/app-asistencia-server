@@ -8,8 +8,6 @@ import {
 export function datosAlumnos(req, res) {
   const { docente_id, docente_rol } = req.session;
   try {
-    if (docente_rol) {
-    }
     db.all(selectAlumnos, (err, rows) => {
       if (err) {
         console.log(err.message);
@@ -22,34 +20,45 @@ export function datosAlumnos(req, res) {
   }
 }
 export function modificarDatosAlumno(req, res) {
+  console.log("controller");
   console.log(req.body);
   const {
-    nro_legajo,
-    tipo_dni,
-    nro_dni,
+    activo,
     nombre,
     apellido,
-    direccion,
-    localidad,
+    tipo_dni,
+    nro_dni,
+    fecha_nac,
     car_telefono,
     telefono,
+    direccion,
     email,
+    nro_legajo,
+    localidad,
     car_tel_extra,
     telefono_extra,
     fotoc_analitico,
     fotoc_dni,
     planilla_ins,
-    activo,
-    fecha_nac,
     id_alumno,
   } = req.body;
   try {
     db.all(
       updateAlumnos,
-      [ tipo_dni, nro_dni, nro_legajo, nombre, apellido, activo, fecha_nac, id_alumno ],
+      [
+        tipo_dni,
+        nro_dni,
+        nro_legajo,
+        nombre,
+        apellido,
+        activo,
+        fecha_nac,
+        id_alumno,
+      ],
       (err, rows) => {
         if (err) {
           //error del servidor
+          console.log("1st query")
           console.log(err);
           return res.json({ message: err.message }).status(500);
         }
@@ -68,12 +77,13 @@ export function modificarDatosAlumno(req, res) {
             planilla_ins,
             id_alumno,
           ],
-          (err, rows) => {
+          (err) => {
             if (err) {
               console.log(err);
               return res.json({ message: err.message }).status(500);
             }
-            return res.json({ message: "alumno modificado" }).status(200);
+            console.log("response")
+            return res.json({ message: "alumno modificado" });
           }
         );
       }
