@@ -20,9 +20,18 @@ export const mostrarCursos = `SELECT AL.id_curso as id_curso, AL.nombre as nombr
 
 export const buscarAlumno = `SELECT AL.tipo_dni,AL.nro_legajo, AL.nombre,AL.apellido,AL.fecha_nac, DAL.id_alumno,DAL.direccion, DAL.localidad,DAL.car_telefono, DAL.telefono, DAL.car_tel_extra, DAL.telefono_extra, DAL.email, DAL.fotoc_dni, DAL.fotoc_analitico, DAL.planilla_ins FROM alumnos AL INNER JOIN detalle_alumnos DAL ON DAL.id_alumno = AL.id_alumno WHERE AL.nro_dni = ?`;
 
-export const insertAlumno = `INSERT INTO alumnos (tipo_dni,nro_dni,nro_legajo,nombre,apellido, fecha_nac) VALUES (?,?,?,?,?,?)`;
-export const insertCurso = `INSERT INTO cursos (nombre ,id_docente, horario_incio, horario_final, dias,fecha_inicio,fecha_finalizacion) VALUES(?,?,?,?,?,?,?)`
+export const insertAlumno = `INSERT INTO alumnos (tipo_dni,nro_dni,nro_legajo,nombre,apellido,activo, fecha_nac) VALUES (?,?,?,?,?,?,?)`;
+export const insertCurso = `INSERT INTO cursos (nombre ,id_docente, horario_incio, horario_final, dias,fecha_inicio,fecha_finalizacion) VALUES(?,?,?,?,?,?,?)`;
 export const insertDetalleAlumno = `INSERT INTO detalle_alumnos (id_alumno,direccion, localidad,car_telefono, telefono, car_tel_extra, telefono_extra, email, fotoc_dni, fotoc_analitico, planilla_ins ) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+
+export const updateAltaAlumnos = `UPDATE alumnos SET 
+tipo_dni=?, 
+nro_dni=?, 
+nro_legajo=?, 
+nombre=?, 
+apellido=?, 
+fecha_nac=?
+WHERE id_alumno=?;`;
 
 export const selectDocenteDetalleDocente = `SELECT * FROM docentes DO
 INNER JOIN detalle_docentes DAL ON DO.id_docente = DAL.id_docente
@@ -70,7 +79,7 @@ export const updateDocente = `UPDATE docentes SET nombre =?, tipo_dni =?, nro_dn
 export const updateDetalleDocente = `UPDATE detalle_docentes SET  direccion =?, localidad =?, car_telefono =?, telefono =?, car_tel_extra=?, telefono_extra =?, email =? WHERE id_docente =?`;
 
 export const selectCursos = `SELECT * FROM cursos CU  ; `;
-export const selectDias =  `SELECT * FROM dias DI`;
+export const selectDias = `SELECT * FROM dias DI`;
 
 export const updateCursos = `UPDATE cursos SET 
      
