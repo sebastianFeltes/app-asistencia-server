@@ -93,3 +93,11 @@ export const updateCursos = `UPDATE cursos SET
       WHERE id_curso=?`;
 
 export const updatetAsistAlumno = "UPDATE asistencia SET cod_asistencia = 4 WHERE id_asistencia = ?";
+
+export const selectDataCursoById = `SELECT CUR.*, DOC.nombre AS nombre_docente, DOC.apellido AS apellido_docente FROM cursos CUR 
+INNER JOIN docentes DOC ON DOC.id_docente = CUR.id_docente 
+WHERE CUR.id_curso = ?`;
+
+export const selectDiasByCursoId = `SELECT DIA.nombre AS nombre_dia FROM dias DIA
+INNER JOIN rel_curso_dia RCD ON DIA.id_dia = RCD.id_dia
+WHERE RCD.id_curso = ?;`;
