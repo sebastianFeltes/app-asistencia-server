@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const modificacionCursosSchema = z.object({
+export const altaCursoSchema = z.object({
   body: z.object({
      id_curso: z.number(), 
     nombre: z.string().min(3),

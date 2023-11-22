@@ -43,6 +43,8 @@ export function modificarCursos(req, res) {
     horario_inicio,
     horario_final,
     id_docente,
+    fecha_inicio,
+    fecha_finalizacion,
     activo,
   } = req.body;
   const { docente_id, docente_rol } = req.session;
@@ -50,7 +52,7 @@ export function modificarCursos(req, res) {
   try {
     db.all(
       updateCursos,
-      [ nombre, horario_inicio, horario_final, id_docente, activo,id_curso],
+      [ nombre, horario_inicio, horario_final, id_docente, activo,fecha_inicio,fecha_finalizacion,id_curso],
       (err, rows) => {
         if (err) {
           //error del servidor
