@@ -2,10 +2,9 @@ import { selectAsistencia, updatetAsistAlumno } from "../database/queries.databa
 
 import { db } from "../database/conexion.database.js";
 export function modificarAsistencia(req, res) {
-	const id_asistencia = req.params.id_asistencia;
-	console.log(id_asistencia);
+	const { id_asistencia, cod_asistencia } = req.body;
 	try {
-		db.all(updatetAsistAlumno, [id_asistencia], (err, rows) => {
+		db.all(updatetAsistAlumno, [cod_asistencia, id_asistencia], (err, rows) => {
 			if (err) res.json({ message: err.message });
 			res.json({ message: "asistencia modificada" });
 		});
