@@ -10,6 +10,9 @@ import nuevoDocentesRouter from "./routes/alta-docente.routes.js";
 import docentesRouter from "./routes/datos-docentes.routes.js";
 import cursosRouter from "./routes/datosCursos.routes.js";
 import asistenciaRouter from "./routes/asistencia-alumnos.routes.js";
+import nuevoCursoRouter from "./routes/alta-curso.routes.js";
+
+//TODO: arreglar el alta de los cursos
 
 const app = express();
 
@@ -43,6 +46,7 @@ app.use(qrRouter);
 
 app.use(docentesRouter);
 
+app.use(nuevoCursoRouter)
 app.use(cursosRouter);
 
 app.use(asistenciaRouter);
