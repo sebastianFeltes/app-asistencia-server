@@ -5,6 +5,7 @@ import {
 	selectDias,
 	selectDataCursoById,
 	selectDiasByCursoId,
+	selectDiasCursos,
 } from "../database/queries.database.js";
 
 export function getDias(req, res) {
@@ -25,16 +26,22 @@ export function getDias(req, res) {
 export function getCursos(req, res) {
 	const { docente_id, docente_rol } = req.session;
 	try {
-		if (true) {
-			db.all(selectCursos, (err, rows) => {
+		db.all(selectCursos, (err, rows) => {
+			if (err) {
+				console.log(err);
+				return res.json({ message: err.message });
+			}
+			// console.log(rows);
+			db.all(selectDiasCursos, (err, dayRows) => {
 				if (err) {
 					console.log(err);
 					return res.json({ message: err.message });
 				}
-				// console.log(rows);
-				return res.json(rows);
+				const data = { dataCursos: rows, dias: dayRows };
+				//console.log(data);
+				return res.json(data);
 			});
-		}
+		});
 	} catch (error) {
 		console.log(error.message);
 		return res.json({ message: error.message });
@@ -42,24 +49,20 @@ export function getCursos(req, res) {
 }
 
 export function modificarCursos(req, res) {
-	const { id_curso, nombre, horario_inicio, horario_final, id_docente, fecha_inicio, fecha_finalizacion, activo } =
-		req.body;
+	const { id_curso, nombre, horario_inicio, horario_final, id_docente, fecha_inicio, fecha_final, activo } = req.body;
 	const { docente_id, docente_rol } = req.session;
 
 	try {
 		db.all(
 			updateCursos,
-			[nombre, horario_inicio, horario_final, id_docente, activo, fecha_inicio, fecha_finalizacion, id_curso],
+			[nombre, id_docente, horario_inicio, horario_final, activo, fecha_inicio, fecha_final, id_curso],
 			(err, rows) => {
 				if (err) {
 					//error del servidor
 					console.log(err);
 					return res.json({ message: err.message }).status(500);
 				}
-				console.log("query");
-				if (rows.length == 0) {
-					return res.json({ message: "datos invalidos" }).status(400);
-				}
+
 				return res.json({ message: "Curso modificado" }).status(200);
 			}
 		);
