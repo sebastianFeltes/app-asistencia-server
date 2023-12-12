@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3'
 
-const db = new sqlite3.Database('./app.db');
+const db = new sqlite3.Database('../app.db');
 
 db.all("SELECT DATE() AS fecha", (error, result) => {
   if (error) {

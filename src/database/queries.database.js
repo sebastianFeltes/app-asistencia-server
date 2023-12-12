@@ -6,7 +6,7 @@ INNER JOIN rel_curso_alumnos RCA ON AL.id_alumno = RCA.id_alumno
 INNER JOIN cursos CUR ON CUR.id_curso = RCA.id_curso
 WHERE AL.id_alumno = ? AND ? BETWEEN "00:00:00" AND CUR.horario_final;`;
 
-export const insertAsistencia = `INSERT INTO asistencia(id_rel_curso_alumno, fecha, cod_asistencia) VALUES(?,?,?)`;
+export const insertAsistencia = `INSERT INTO asistencia(id_rel_curso_alumno, fecha, cod_asistencia, hora) VALUES(?,?,?,?)`;
 
 export const selectAsistencia = `SELECT ASIS.id_asistencia, ASIS.fecha, ALU.nombre, ALU.apellido, ALU.id_alumno, COD.descripcion, ALU.id_alumno  FROM asistencia ASIS
 INNER JOIN rel_curso_alumnos RCA ON ASIS.id_rel_curso_alumno = RCA.id_relacion
@@ -23,6 +23,7 @@ export const buscarAlumno = `SELECT AL.tipo_dni,AL.nro_legajo, AL.nombre,AL.apel
 export const insertAlumno = `INSERT INTO alumnos (tipo_dni,nro_dni,nro_legajo,nombre,apellido,activo, fecha_nac) VALUES (?,?,?,?,?,?,?)`;
 export const insertCurso = `INSERT INTO cursos (nombre ,id_docente, horario_inicio, horario_final,activo, fecha_inicio,fecha_final) VALUES(?,?,?,?,?,?,?)`;
 export const insertRelCursoDia = `INSERT INTO rel_curso_dia (id_curso,id_dia) VALUES (?,?)`;
+export const eliminarRelCursoDia = `DELETE FROM rel_curso_dia WHERE id_curso = ?`;
 export const insertDetalleAlumno = `INSERT INTO detalle_alumnos (id_alumno,direccion, localidad,car_telefono, telefono, car_tel_extra, telefono_extra, email, fotoc_dni, fotoc_analitico, planilla_ins ) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
 
 export const updateAltaAlumnos = `UPDATE alumnos SET 
@@ -86,7 +87,8 @@ export const selectDiasCursos = `SELECT * FROM rel_curso_dia RCD INNER JOIN dias
 export const selectDias = `SELECT * FROM dias DI`;
 
 export const updateCursos = `UPDATE cursos SET nombre=?, id_docente=?, horario_inicio=?, horario_final=?, activo=?, fecha_inicio=?, fecha_final=? WHERE id_curso=?`;
-export const updatetAsistAlumno = "UPDATE asistencia SET cod_asistencia = ? WHERE id_asistencia = ?";
+export const updatetAsistAlumno =
+  "UPDATE asistencia SET cod_asistencia = ? WHERE id_asistencia = ?";
 
 export const selectDataCursoById = `SELECT CUR.*, DOC.nombre AS nombre_docente, DOC.apellido AS apellido_docente FROM cursos CUR 
 INNER JOIN docentes DOC ON DOC.id_docente = CUR.id_docente 
@@ -95,3 +97,9 @@ WHERE CUR.id_curso = ?`;
 export const selectDiasByCursoId = `SELECT DIA.nombre AS nombre_dia FROM dias DIA
 INNER JOIN rel_curso_dia RCD ON DIA.id_dia = RCD.id_dia
 WHERE RCD.id_curso = ?;`;
+
+//gestion ausencias
+export const selectCursoByDia = `SELECT id_curso FROM rel_curso_dia
+WHERE id_dia = ?`;
+export const selectRelCursoAlumnos = `SELECT id_relacion FROM rel_curso_alumnos WHERE id_curso = ?`;
+export const selectAsistenciaByIdRelacion = `SELECT * FROM asistencia WHERE id_rel_curso_alumno = ? AND fecha = ?`;

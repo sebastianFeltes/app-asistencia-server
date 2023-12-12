@@ -11,9 +11,11 @@ import docentesRouter from "./routes/datos-docentes.routes.js";
 import cursosRouter from "./routes/datosCursos.routes.js";
 import asistenciaRouter from "./routes/asistencia-alumnos.routes.js";
 import nuevoCursoRouter from "./routes/alta-curso.routes.js";
+import { timer } from "./controllers/inasistencias.controller.js";
 
 //TODO: arreglar el alta de los cursos
 
+timer()
 const app = express();
 
 const port = process.env.PORT;
