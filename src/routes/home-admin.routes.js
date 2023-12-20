@@ -5,6 +5,6 @@ import { getDias } from "../controllers/datosCursos.controllers";
 
 
 const adminRouter = Router();
-cursosRouter.get("/cursos",mosCursos);
+cursosRouter.get("/api/cursos",mosCursos);
 
 export default adminRouterRouter ;

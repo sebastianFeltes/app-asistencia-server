@@ -1,6 +1,6 @@
 import express, { json, urlencoded } from "express";
-import 'dotenv/config'
-import cors from "cors"
+import "dotenv/config";
+import cors from "cors";
 import session from "express-session";
 import alumnosRouter from "./routes/datos-alumnos.routes.js";
 import loginRouter from "./routes/login.routes.js";
@@ -15,7 +15,7 @@ import { timer } from "./controllers/inasistencias.controller.js";
 
 //TODO: arreglar el alta de los cursos
 
-timer()
+timer();
 const app = express();
 
 const port = process.env.PORT;
@@ -29,13 +29,16 @@ app.use(urlencoded());
 app.set("trust proxy", 1);
 
 app.use(
-	session({
-		secret: "black-cat",
-		resave: true,
-		saveUninitialized: true,
-	})
-	);
-	
+  session({
+    secret: "black-cat",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+app.get("/api",(req,res)=>{
+	res.send("hello world")
+})
 app.use(alumnosRouter);
 
 app.use(loginRouter);
@@ -48,7 +51,7 @@ app.use(qrRouter);
 
 app.use(docentesRouter);
 
-app.use(nuevoCursoRouter)
+app.use(nuevoCursoRouter);
 app.use(cursosRouter);
 
 app.use(asistenciaRouter);

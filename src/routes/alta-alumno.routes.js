@@ -5,9 +5,9 @@ import { alumnoValidator } from "../middlewares/alumnoValidator.middlewares.js";
 
 
 const nuevoAlumnoRouter = Router();
-nuevoAlumnoRouter.post("/app/alta-alumno",alumnoValidator(altaAlumnoSchema),tryAltaAlumno);
-nuevoAlumnoRouter.post("/app/alta-alumno/:id_alumno",alumnoValidator(altaAlumnoSchema),modificarDatosAltaAlumno);
-nuevoAlumnoRouter.get("/app/alta-alumno/:nro_dni",traerAlumno); 
-nuevoAlumnoRouter.get("/app/alta-alumno",buscarCurso); 
+nuevoAlumnoRouter.post("/api/alta-alumno",alumnoValidator(altaAlumnoSchema),tryAltaAlumno);
+nuevoAlumnoRouter.post("/api/alta-alumno/:id_alumno",alumnoValidator(altaAlumnoSchema),modificarDatosAltaAlumno);
+nuevoAlumnoRouter.get("/api/alta-alumno/:nro_dni",traerAlumno); 
+nuevoAlumnoRouter.get("/api/alta-alumno",buscarCurso); 
 
 export default nuevoAlumnoRouter;

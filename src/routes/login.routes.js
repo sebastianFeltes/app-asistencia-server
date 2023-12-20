@@ -5,7 +5,7 @@ import { loginUserSchema } from "../schemas/user.schemas.js";
 
 const loginRouter = Router();
 
-loginRouter.post("/login", userValidator(loginUserSchema), tryLogin);
-loginRouter.get("/login");
+loginRouter.post("/api/login", userValidator(loginUserSchema), tryLogin);
+loginRouter.get("/api/login");
 
 export default loginRouter;

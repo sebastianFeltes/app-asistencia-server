@@ -85,83 +85,27 @@ export async function buscarAlumnoPorId(req, res) {
             return { codigo_asistencia: 4, descripcion: "AUSENTE" };
           }
         }
+        async function retornarInasistencias(id_relacion) {
+          return new Promise((resolve, reject) => {
+            db.all(
+              "SELECT COUNT(id_asistencia) as cantidad FROM asistencia WHERE id_rel_curso_alumno = ? AND cod_asistencia = 4",
+              [id_relacion],
+              (err, rows) => {
+                if (err) {
+                  console.log(err);
+                  reject({ mensaje: err.message });
+                } else {
+                  if (rows.length > 0) {
+                    resolve(rows[0].cantidad); // Resuelve con la cantidad de inasistencias
+                  } else {
+                    resolve(0); // Si no hay filas, la cantidad es cero
+                  }
+                }
+              }
+            );
+          });
+        }
 
-        /* function calcularCodigoAsistencia() {
-          const horarioIngreso = rows[0].horario_ingreso;
-
-          // Dividir la cadena en horas, minutos y segundos
-          const partesTiempo = horarioIngreso.split(":");
-          const horas = parseInt(partesTiempo[0]);
-          const minutos = parseInt(partesTiempo[1]);
-          const segundos = parseInt(partesTiempo[2]);
-
-          //Sumar 30 min para el TARDE
-          function calcularCodigoAsistencia() {
-            const horarioIngreso = rows[0].horario_ingreso;
-
-            // Dividir la cadena en horas, minutos y segundos
-            const partesTiempo = horarioIngreso.split(":");
-            const horas = parseInt(partesTiempo[0]);
-            const minutos = parseInt(partesTiempo[1]);
-            const segundos = parseInt(partesTiempo[2]);
-
-            // Sumar 30 minutos al horario de ingreso
-            minutos += 30;
-
-            // Verificar si hay que ajustar las horas si los minutos superan 60
-            if (minutos >= 60) {
-              horas += Math.floor(minutos / 60);
-              minutos %= 60;
-            }
-
-
-
-            // Sumar 1 hora para MEDIA FALTA
-            const nuevaHora = (horas + 1) % 24; // Asegurarse de que no exceda las 24 horas
-
-            // Crear una nueva cadena de tiempo
-            const horarioMediaFalta = `${nuevaHora
-              .toString()
-              .padStart(2, "0")}:${minutos
-              .toString()
-              .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
-            //compara la hora de ingreso del alumno con la hora del recreo para que el código sea 1 o 2
-            if (horaActual <= horarioTarde) {
-              return { codigo_asistencia: 1, descripcion: "PRESENTE" };
-            } else if (
-              horaActual >= horarioTarde &&
-              horaActual <= horarioMediaFalta
-            ) {
-              return { codigo_asistencia: 2, descripcion: "TARDE" };
-            } else if (horaActual >= horarioMediaFalta) {
-              return { codigo_asistencia: 3, descripcion: "MEDIA FALTA" };
-            } else {
-              return { codigo_asistencia: 4, descripcion: "AUSENTE" };
-            }
-          }
-          // Sumar 1 hora para MEDIA FALTA
-          const nuevaHora = (horas + 1) % 24; // Asegurarse de que no exceda las 24 horas
-
-          // Crear una nueva cadena de tiempo
-          const horarioMediaFalta = `${nuevaHora
-            .toString()
-            .padStart(2, "0")}:${minutos.toString().padStart(2, "0")}:${segundos
-            .toString()
-            .padStart(2, "0")}`;
-          //compara la hora de ingreso del alumno con la hora del recreo para que el código sea 1 o 2
-          if (horaActual <= horarioTarde) {
-            return { codigo_asistencia: 1, descripcion: "PRESENTE" };
-          } else if (
-            horaActual >= horarioTarde &&
-            horaActual <= horarioMediaFalta
-          ) {
-            return { codigo_asistencia: 2, descripcion: "TARDE" };
-          } else if (horaActual >= horarioMediaFalta) {
-            return { codigo_asistencia: 3, descripcion: "MEDIA FALTA" };
-          } else {
-            return { codigo_asistencia: 4, descripcion: "AUSENTE" };
-          }
-        } */
         const codAsistencia = rows[0] ? calcularCodigoAsistencia() : false;
         const id_relacion = rows[0].id_relacion;
         const fechaActual = obtenerFechaActual();
@@ -173,35 +117,42 @@ export async function buscarAlumnoPorId(req, res) {
               console.log(err);
               return res.json({ mensaje: err.message });
             } else if (row.length > 0) {
-              //console.log(row);
-              async function getDetalleAsistencia() {
-                let detalle = {
-                  codigo_asistencia: 0,
-                  descripcion: "",
-                };
-                detalle.codigo_asistencia = row[0].codigo_asistencia;
-                db.all(
-                  "SELECT descripcion FROM cod_asistencia WHERE id_codigo = ?",
-                  [row[0].cod_asistencia],
-                  (err, desc) => {
-                    if (err) {
-                      console.log(err);
-                      return res.json({ mensaje: err.message });
-                    }
-                    returndetalle.descripcion = desc[0].descripcion.toUpperCase();
+              let detalle = {
+                //creo el detalle de la asistencia si existe
+                codigo_asistencia: 0,
+                descripcion: "",
+              };
+              detalle.codigo_asistencia = row[0].cod_asistencia;
+              db.all(
+                "SELECT descripcion FROM cod_asistencia WHERE id_codigo = ?",
+                [row[0].cod_asistencia],
+                async (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    return res.json({ mensaje: err.message });
                   }
-                );
-                console.log(detalle);
-                return detalle;
-              }
-
-              const asistencia = getDetalleAsistencia();
-              return res.json({
-                data_alumno_curso: rows[0],
-                cod_asistencia: asistencia,
-                hora_ingreso: row[0].hora,
-                detalle: "Ud ya ha registrado la asistencia el día de hoy",
-              });
+                  //console.log(result[0].descripcion.toUpperCase())
+                  //return desc = await result[0].descripcion.toUpperCase();
+                  detalle.descripcion = result[0].descripcion.toUpperCase();
+                  const inasistencias = retornarInasistencias(id_relacion) // Reemplaza 123 con el ID de relación correcto
+                    .then((cantidad) => {
+                      //console.log(cantidad)
+                      return cantidad;
+                      // Aquí puedes realizar acciones con la cantidad de inasistencias obtenida
+                    })
+                    .catch((error) => {
+                      console.error("Error:", error);
+                    });
+                  return res.json({
+                    data_alumno_curso: rows[0],
+                    cod_asistencia: detalle,
+                    hora_ingreso: row[0].hora,
+                    detalle: "Ud ya ha registrado la asistencia el día de hoy",
+                    cantidad_inasistencias: await inasistencias,
+                  });
+                }
+              );
+              //console.log(desc)
             } else {
               db.all(
                 insertAsistencia,
@@ -211,15 +162,29 @@ export async function buscarAlumnoPorId(req, res) {
                   calcularCodigoAsistencia().codigo_asistencia,
                   horaActual,
                 ],
-                (err) => {
-                  if (err) res.json({ message: err.message });
+                async (err) => {
+                  if (err) {
+                    console.log(err)
+                    res.json({ message: err.message });
+                  } else {
+                    const inasistencias = retornarInasistencias(id_relacion) // Reemplaza 123 con el ID de relación correcto
+                      .then((cantidad) => {
+                        //console.log(cantidad)
+                        return cantidad;
+                        // Aquí puedes realizar acciones con la cantidad de inasistencias obtenida
+                      })
+                      .catch((error) => {
+                        console.error("Error:", error);
+                      });
+                    return res.json({
+                      data_alumno_curso: rows[0],
+                      cod_asistencia: codAsistencia,
+                      hora_ingreso: horaActual,
+                      cantidad_inasistencias: await inasistencias,
+                    });
+                  }
                 }
               );
-              return res.json({
-                data_alumno_curso: rows[0],
-                cod_asistencia: codAsistencia,
-                hora_ingreso: horaActual,
-              });
             }
           }
         );

@@ -4,5 +4,5 @@ import { cursosValidator } from "../middlewares/cursosValidator.middlewares.js";
 import { tryAltaCurso } from "../controllers/alta-curso.controller.js";
 
 const nuevoCursoRouter = Router();
-nuevoCursoRouter.post("/alta-curso", cursosValidator(altaCursoSchema), tryAltaCurso)
+nuevoCursoRouter.post("/api/alta-curso", cursosValidator(altaCursoSchema), tryAltaCurso)
 export default nuevoCursoRouter;

@@ -6,8 +6,8 @@ import { modificacionAlumnos } from "../schemas/modificacion-alumnos.schemas.js"
 
 const alumnosRouter = Router();
 
-alumnosRouter.get("/datos-alumnos", datosAlumnos);
-alumnosRouter.post("/datos-alumnos",alumnoValidator(modificacionAlumnos), modificarDatosAlumno);
+alumnosRouter.get("/api/datos-alumnos", datosAlumnos);
+alumnosRouter.post("/api/datos-alumnos",alumnoValidator(modificacionAlumnos), modificarDatosAlumno);
 
 export default alumnosRouter;
 

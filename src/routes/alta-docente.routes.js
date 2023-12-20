@@ -4,8 +4,8 @@ import { docenteValidator } from "../middlewares/docenteValidator.middlewares.js
 import { altaDocenteSchema } from "../schemas/alta-docente.schemas.js";
 const nuevosDocentesRouter = Router();
 
-nuevosDocentesRouter.post("/alta-docente",docenteValidator(altaDocenteSchema), altaDocentes);
+nuevosDocentesRouter.post("/api/alta-docente",docenteValidator(altaDocenteSchema), altaDocentes);
 
-nuevosDocentesRouter.get("/alta-docente", getDocentes)
+nuevosDocentesRouter.get("/api/alta-docente", getDocentes)
 
 export default nuevosDocentesRouter;

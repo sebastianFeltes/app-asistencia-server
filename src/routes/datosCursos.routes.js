@@ -4,8 +4,8 @@ import { cursosValidator } from "../middlewares/cursosValidator.middlewares.js";
 import { modificacionCursosSchema } from "../schemas/modificacionCursos..schemas.js";
 
 const cursosRouter = Router();
-cursosRouter.get("/cursos", getCursos);
-cursosRouter.get("/cursos/:id", getCurso);
-cursosRouter.post("/cursos", cursosValidator(modificacionCursosSchema), modificarCursos);
-cursosRouter.get("/dias", getDias);
+cursosRouter.get("/api/cursos", getCursos);
+cursosRouter.get("/api/cursos/:id", getCurso);
+cursosRouter.post("/api/cursos", cursosValidator(modificacionCursosSchema), modificarCursos);
+cursosRouter.get("/api/dias", getDias);
 export default cursosRouter;

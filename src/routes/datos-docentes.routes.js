@@ -3,7 +3,7 @@ import { getDocentes, modificarDocente } from "../controllers/datos-docentes.con
 
 const docentesRouter = Router();
 
-docentesRouter.post("/datos-docentes", modificarDocente);
-docentesRouter.get("/docentes", getDocentes);
+docentesRouter.post("/api/datos-docentes", modificarDocente);
+docentesRouter.get("/api/docentes", getDocentes);
 
 export default docentesRouter;

@@ -1,7 +1,7 @@
 export const selectDocentePorDni = `
 SELECT * FROM docentes WHERE nro_dni = ?`;
 
-export const selectAlumnoPorId = `SELECT AL.id_alumno as id_alumno, AL.nombre as nombre_alumno , AL.apellido as apellido_alumno, AL.nro_dni as dni_alumno, CUR.id_curso as id_curso, CUR.nombre as nombre_curso, CUR.horario_inicio as horario_ingreso, CUR.horario_final as horario_egreso, RCA.id_relacion as id_relacion FROM alumnos AL
+export const selectAlumnoPorId = `SELECT AL.id_alumno as id_alumno, AL.nombre as nombre_alumno , AL.apellido as apellido_alumno, AL.nro_dni as dni_alumno, CUR.id_curso as id_curso, CUR.nombre as nombre_curso, CUR.horario_inicio as horario_ingreso, CUR.horario_final as horario_egreso, CUR.cantidad_clases as clases_totales,RCA.id_relacion as id_relacion FROM alumnos AL
 INNER JOIN rel_curso_alumnos RCA ON AL.id_alumno = RCA.id_alumno
 INNER JOIN cursos CUR ON CUR.id_curso = RCA.id_curso
 WHERE AL.id_alumno = ? AND ? BETWEEN "00:00:00" AND CUR.horario_final;`;
