@@ -47,7 +47,7 @@ function obtenerHoraActual() {
 } */
 // Esta función se ejecutará a las 19:00 horas todos los días
 export function timer() {
-  cron.schedule("17 19 * * *", () => {
+  cron.schedule("00 19 * * *", () => {
     // Lógica para ejecutar la función a las 19:00 horas de cada día
     //Primero obtengo el día actual
     const today = new Date().getDay();
@@ -85,11 +85,11 @@ export function timer() {
                           if (err) {
                             return console.log(err);
                           }
-                          console.log("ausente");
+                          //console.log("ausente");
                         }
                       );
                     }else{
-                        console.log("asistencia ya cargada")
+                        //console.log("asistencia ya cargada")
                     }
                   }
                 );
