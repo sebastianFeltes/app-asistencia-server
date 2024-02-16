@@ -20,7 +20,7 @@ const app = express();
 
 const port = process.env.PORT;
 
-app.use();
+app.use(cors());
 
 app.use(json());
 
