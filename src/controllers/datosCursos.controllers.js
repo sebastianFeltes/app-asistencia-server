@@ -61,11 +61,12 @@ export function modificarCursos(req, res) {
     fecha_final,
     activo,
     id_dia,
-    horas_catedra
+    horas_catedra,
   } = req.body;
   const { docente_id, docente_rol } = req.session;
 
   try {
+    console.log(req.body);
     db.all(
       updateCursos,
       [
@@ -85,7 +86,8 @@ export function modificarCursos(req, res) {
           console.log(err);
           return res.json({ message: err.message }).status(500);
         } else {
-          id_dia.map((e) => {
+          return res.json({message:"Curso modificado"})
+          /* i d_dia.map((e) => {
             db.run(eliminarRelCursoDia, [id_curso], (err) => {
               if (err) {
                 console.log(err);
@@ -102,7 +104,7 @@ export function modificarCursos(req, res) {
                 });
               }
             });
-          });
+          }); */
         }
       }
     );
