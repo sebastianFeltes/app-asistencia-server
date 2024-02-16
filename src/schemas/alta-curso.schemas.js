@@ -9,5 +9,6 @@ export const altaCursoSchema = z.object({
     fecha_inicio:z.string(),
     fecha_final:z.string(),
     activo: z.number(), 
+    horas_catedra: z.number(),
   }),
 });

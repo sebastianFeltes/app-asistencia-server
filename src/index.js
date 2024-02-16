@@ -20,7 +20,7 @@ const app = express();
 
 const port = process.env.PORT;
 
-app.use(cors());
+app.use();
 
 app.use(json());
 
@@ -36,9 +36,9 @@ app.use(
   })
 );
 
-app.get("/api",(req,res)=>{
-	res.send("hello world")
-})
+app.get("/api", (req, res) => {
+  res.send("hello world");
+});
 app.use(alumnosRouter);
 
 app.use(loginRouter);
