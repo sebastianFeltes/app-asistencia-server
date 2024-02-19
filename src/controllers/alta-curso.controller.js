@@ -6,10 +6,10 @@ export function tryAltaCurso(req, res) {
 	//console.log(req.body);
 	//res.json({ mensaje: "recibido" });
 	try {
-		const { nombre, id_docente, horario_inicio, horario_final, activo, fecha_inicio, fecha_final, dias, horas_catedra } = req.body;
+		const { nombre, id_docente, horario_inicio, horario_final, activo, fecha_inicio, fecha_final, dias, horas_catedra,cantidad_clases } = req.body;
 		db.run(
 			insertCurso,
-			[nombre, id_docente, horario_inicio, horario_final, activo, fecha_inicio, fecha_final, horas_catedra],
+			[nombre, id_docente, horario_inicio, horario_final, activo, fecha_inicio, fecha_final, horas_catedra,cantidad_clases],
 			(err, rows) => {
 				if (err) {
 					console.log(err.message);

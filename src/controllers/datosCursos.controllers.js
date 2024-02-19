@@ -62,6 +62,7 @@ export function modificarCursos(req, res) {
     activo,
     id_dia,
     horas_catedra,
+    cantidad_clases
   } = req.body;
   const { docente_id, docente_rol } = req.session;
 
@@ -78,6 +79,7 @@ export function modificarCursos(req, res) {
         fecha_inicio,
         fecha_final,
         horas_catedra,
+        cantidad_clases,
         id_curso,
       ],
       (err, rows) => {
