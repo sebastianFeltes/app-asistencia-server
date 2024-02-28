@@ -3,7 +3,7 @@ import z, { string } from "zod";
 //VALIDACION DE CAMPOS
 export const altaAlumnoSchema = z.object({
 	body: z.object({
-		tipo_dni: z.string().min(2),
+		tipo_dni: z.string().max(2),
 		nro_dni: z.number(),
 		nro_legajo: z.number(),
 		nombre: z.string().min(2),
@@ -22,6 +22,7 @@ export const altaAlumnoSchema = z.object({
 		fotoc_analitico: z.number(),
 		fotoc_dni: z.number(),
 		planilla_ins: z.number(),
+		cursos: z.array().min(1)
 	}),
 });
 /* 

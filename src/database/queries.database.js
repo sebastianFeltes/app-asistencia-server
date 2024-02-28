@@ -56,7 +56,7 @@ nro_legajo=?,
 nombre=?, 
 apellido=?, 
 activo=?,
-fecha_nac=?,
+fecha_nac=?
 WHERE id_alumno=?;`;
 
 export const updateDetalleAlumnos = `UPDATE detalle_alumnos SET 
