@@ -7,8 +7,6 @@ import {
   selectRelCursoAlumnos,
 } from "../database/queries.database.js";
 
-
-
 function obtenerFechaActual() {
   const fecha = new Date();
   const dia = fecha.getDate();
@@ -20,27 +18,45 @@ function obtenerFechaActual() {
   const mesFormato = mes < 10 ? `0${mes}` : mes;
 
   // Formatear la fecha como dd/mm/aaaa
-  const fechaFormateada = `${diaFormato}/${mesFormato}/${año}`;
+  const fechaFormateada = `${diaFormato}-${mesFormato}-${año}`;
 
   return fechaFormateada;
 }
 
 function obtenerHoraActual() {
-    const fecha = new Date();
-    const horas = fecha.getHours();
-    const minutos = fecha.getMinutes();
-    const segundos = fecha.getSeconds();
-  
-    // Asegurarse de tener dos dígitos para las horas, minutos y segundos (agregando un 0 al inicio si es necesario)
-    const horasFormato = horas < 10 ? `0${horas}` : horas;
-    const minutosFormato = minutos < 10 ? `0${minutos}` : minutos;
-    const segundosFormato = segundos < 10 ? `0${segundos}` : segundos;
-  
-    // Formatear la hora como hh:mm:ss
-    const horaFormateada = `${horasFormato}:${minutosFormato}:${segundosFormato}`;
-  
-    return horaFormateada;
+  const fecha = new Date();
+  const horas = fecha.getHours();
+  const minutos = fecha.getMinutes();
+  const segundos = fecha.getSeconds();
+
+  // Asegurarse de tener dos dígitos para las horas, minutos y segundos (agregando un 0 al inicio si es necesario)
+  const horasFormato = horas < 10 ? `0${horas}` : horas;
+  const minutosFormato = minutos < 10 ? `0${minutos}` : minutos;
+  const segundosFormato = segundos < 10 ? `0${segundos}` : segundos;
+
+  // Formatear la hora como hh:mm:ss
+  const horaFormateada = `${horasFormato}:${minutosFormato}:${segundosFormato}`;
+
+  return horaFormateada;
+}
+
+// Función para verificar si una fecha de consulta está entre las fechas de inicio y fin
+function verificarFechaEnRango(fechaInicioStr, fechaFinStr, fechaConsultaStr) {
+  // Función para convertir una cadena de fecha en un objeto Date en formato dd-mm-aaaa
+  function parseDate(str) {
+    const parts = str.split("-");
+    // El mes en JavaScript es 0-indexado, por lo que se resta 1 al mes
+    return new Date(parts[2], parts[1] - 1, parts[0]);
   }
+
+  // Convierte las cadenas de fecha en objetos Date
+  const fechaInicio = parseDate(fechaInicioStr);
+  const fechaFin = parseDate(fechaFinStr);
+  const fechaConsulta = parseDate(fechaConsultaStr);
+
+  // Verifica si la fecha de consulta está entre la fecha de inicio y fin
+  return fechaConsulta >= fechaInicio && fechaConsulta <= fechaFin;
+}
 
 /* function marcarAusentes(dias) {
   let diasCurso;
@@ -53,49 +69,65 @@ export function timer() {
     const today = new Date().getDay();
     const fechaActual = obtenerFechaActual();
     const horaActual = obtenerHoraActual();
+
     //Luego, dependiendo del día ejecuto la funcion que pone "ausentes" en los cursos de esos días
+    //SELECCIONAR LOS CURSOS QUE SE DICTAN EL DIA ACTUAL (lun, mar, mie, etc)
     db.all(selectCursoByDia, [today], (err, rows) => {
       if (err) {
         return console.log(err);
       }
-      const id_cursos = rows;
-      if (id_cursos.length > 0) {
-        id_cursos.map((e) => {
+      console.log("cron con cursos del jueves");
+/*       console.log(fechaActual);
+      console.log(today);
+      console.log(rows); */
+      const cursos = rows;
+
+      if (cursos.length > 0) {
+        cursos.map((e) => {
           const id_curso = e.id_curso;
-          db.all(selectRelCursoAlumnos, [id_curso], (err, rows) => {
-            if (err) {
-              return console.log(err);
-            }
-            const relaciones = rows;
-            if (relaciones.length > 0) {
-              relaciones.map((e) => {
-                const id_relacion = e.id_relacion;
-                db.all(
-                  selectAsistenciaByIdRelacion,
-                  [id_relacion, fechaActual],
-                  (err, rows) => {
-                    if (err) {
-                      return console.log(err);
-                    }
-                    if (rows.length <= 0) {
-                      db.all(
-                        insertAsistencia,
-                        [id_relacion, fechaActual, 4, horaActual],
-                        (err, rows) => {
-                          if (err) {
-                            return console.log(err);
+          const fechaInicio = e.fecha_inicio;
+          const fechaFinal = e.fecha_final;
+          //VERIFICAR FECHA EN RANGO DE DIA DE INICIO Y FINAL DE CURSOS
+          const verificacarFecha = verificarFechaEnRango(
+            fechaInicio,
+            fechaFinal,
+            fechaActual
+          );
+
+          if (verificacarFecha) {
+            db.all(selectRelCursoAlumnos, [id_curso], (err, rows) => {
+              if (err) {
+                return console.log(err);
+              }
+              const relaciones = rows;
+              if (relaciones.length > 0) {
+                relaciones.map((e) => {
+                  const id_relacion = e.id_relacion;
+                  db.all(
+                    selectAsistenciaByIdRelacion,
+                    [id_relacion, fechaActual],
+                    (err, rows) => {
+                      if (err) {
+                        return console.log(err);
+                      }
+                      if (rows.length <= 0) {
+                        db.all(
+                          insertAsistencia,
+                          [id_relacion, fechaActual, 4, horaActual],
+                          (err, rows) => {
+                            if (err) {
+                              return console.log(err);
+                            }
+                           // console.log(id_relacion)
                           }
-                          //console.log("ausente");
-                        }
-                      );
-                    }else{
-                        //console.log("asistencia ya cargada")
+                        );
+                      }
                     }
-                  }
-                );
-              });
-            }
-          });
+                  );
+                });
+              }
+            });
+          }
         });
       }
       //console.log(rows);

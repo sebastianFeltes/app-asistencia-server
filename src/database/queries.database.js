@@ -101,7 +101,8 @@ INNER JOIN rel_curso_dia RCD ON DIA.id_dia = RCD.id_dia
 WHERE RCD.id_curso = ?;`;
 
 //gestion ausencias
-export const selectCursoByDia = `SELECT id_curso FROM rel_curso_dia
-WHERE id_dia = ?`;
+export const selectCursoByDia = `SELECT RCD.id_curso, CUR.fecha_inicio, CUR.fecha_final FROM rel_curso_dia RCD
+INNER JOIN  cursos CUR ON CUR.id_curso = RCD.id_curso
+WHERE RCD.id_dia = ?`;
 export const selectRelCursoAlumnos = `SELECT id_relacion FROM rel_curso_alumnos WHERE id_curso = ?`;
 export const selectAsistenciaByIdRelacion = `SELECT * FROM asistencia WHERE id_rel_curso_alumno = ? AND fecha = ?`;
