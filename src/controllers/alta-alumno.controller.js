@@ -36,6 +36,7 @@ export function tryAltaAlumno(req, res) {
 
 	//TODO:DB (INSERTAR NUEVO ALUMNO)
 	try {
+		// console.log(req.body)
 		db.run(insertAlumno, [tipo_dni, nro_dni, nro_legajo, nombre, apellido, activo, fecha_nac], (err, rows) => {
 			if (err) {
 				console.log(err.message);

@@ -44,36 +44,46 @@ export async function datosAlumnos(req, res) {
     db.all(selectAlumnos, async (err, rows) => {
       if (err) {
         console.log(err.message);
-        return res.json({ mensaje: err.message }).status(500);
+        return res.status(500).json({ mensaje: err.message });
       }
 
-      const dataAlumnos = [];
+      try {
+        const dataAlumnos = await Promise.all(
+          rows.map(async (alumno) => {
+            const cursos = await getCursosAlumno(alumno.id_alumno);
+            return { ...alumno, cursos };
+          })
+        );
 
-      for (const alumno of rows) {
-        const id_alumno = alumno.id_alumno;
-        const curso = await getCurso(id_alumno);
-        dataAlumnos.push({ ...alumno, cursos: [curso] });
+        // console.log(dataAlumnos);
+        return res.status(200).json(dataAlumnos);
+      } catch (error) {
+        console.log(error);
+        return res
+          .status(500)
+          .json({ mensaje: "Error al obtener datos de los alumnos" });
       }
-
-      //console.log(dataAlumnos);
-      return res.json(dataAlumnos).status(200);
     });
   } catch (error) {
-    return res.json({ mensaje: err.message }).status(500);
+    console.log(error);
+    return res
+      .status(500)
+      .json({ mensaje: "Error al obtener datos de los alumnos" });
   }
 }
 
-function getCurso(id_alumno) {
+async function getCursosAlumno(id_alumno) {
   return new Promise((resolve, reject) => {
-    db.get(
-      "SELECT CUR.id_curso AS id_curso, CUR.nombre AS nombre_curso FROM cursos CUR INNER JOIN rel_curso_alumnos RCL ON RCL.id_curso = CUR.id_curso WHERE RCL.id_alumno = ?",
-      id_alumno,
-      (err, row) => {
+    db.all(
+      "SELECT CUR.nombre AS nombre_curso, CUR.id_curso AS id_curso FROM cursos CUR INNER JOIN rel_curso_alumnos RCA ON RCA.id_curso = CUR.id_curso WHERE RCA.id_alumno = ?",
+      [id_alumno],
+      (err, rows) => {
         if (err) {
-          //console.log(err.message);
-          reject(err);
+          console.log(err);
+          reject("Error al buscar los cursos por alumno");
+        } else {
+          resolve(rows);
         }
-        resolve(row);
       }
     );
   });
@@ -103,7 +113,7 @@ export function modificarDatosAlumno(req, res) {
     fotoc_dni,
     planilla_ins,
     id_alumno,
-    curso,
+    cursos,
   } = req.body;
   try {
     db.all(
@@ -147,19 +157,32 @@ export function modificarDatosAlumno(req, res) {
               console.log(err);
               return res.json({ message: err.message }).status(500);
             }
-            //console.log("response")
+            // console.log(cursos);
             db.all(
-              "INSERT INTO rel_curso_alumnos (id_alumno, id_curso) VALUES (?,?)",
-              [id_alumno, curso],
-              (err) => {
+              "DELETE FROM rel_curso_alumnos WHERE id_alumno = ?",
+              [id_alumno],
+              (err, row) => {
                 if (err) {
                   console.log(err);
                   return res.json(err.message);
-                } else {
-                  return res.json({ message: "alumno modificado" });
                 }
+                // console.log(row);
               }
             );
+            cursos.map((curso) => {
+              db.all(
+                "INSERT INTO rel_curso_alumnos (id_alumno, id_curso) VALUES (?,?)",
+                [id_alumno, curso],
+                (err) => {
+                  if (err) {
+                    console.log(err);
+                    return res.json(err.message);
+                  }
+                }
+              );
+            });
+            return res.json({ message: "alumno modificado" });
+            //console.log("response")
           }
         );
       }

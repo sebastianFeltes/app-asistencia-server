@@ -68,7 +68,7 @@ export function modificarCursos(req, res) {
   const { docente_id, docente_rol } = req.session;
 
   try {
-    console.log(req.body);
+    // console.log(req.body);
     db.all(
       updateCursos,
       [

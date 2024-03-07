@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 export function modificarDocente(req, res) {
 	const {
 		id_docente,
+		legajo,
 		activo,
 		nombre,
 		apellido,
@@ -21,7 +22,7 @@ export function modificarDocente(req, res) {
 		fecha_nac,
 	} = req.body;
 	try {
-		db.all(updateDocente, [nombre, tipo_dni, nro_dni, id_rol, apellido, activo, fecha_nac, id_docente], (err) => {
+		db.all(updateDocente, [legajo, nombre, tipo_dni, nro_dni, id_rol, apellido, activo, fecha_nac, id_docente], (err) => {
 			if (err) {
 				console.log(err.message);
 				return res.json({ message: err.message }).status(500);
