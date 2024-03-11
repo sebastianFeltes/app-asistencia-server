@@ -1,6 +1,7 @@
 import { selectAsistencia, updatetAsistAlumno } from "../database/queries.database.js";
 
 import { db } from "../database/conexion.database.js";
+
 export function modificarAsistencia(req, res) {
 	const { id_asistencia, cod_asistencia } = req.body;
 	try {
