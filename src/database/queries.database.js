@@ -13,7 +13,7 @@ INNER JOIN rel_curso_alumnos RCA ON ASIS.id_rel_curso_alumno = RCA.id_relacion
 INNER JOIN cursos CUR ON  CUR.id_curso = RCA.id_curso
 INNER JOIN alumnos ALU ON ALU.id_alumno = RCA.id_alumno
 INNER JOIN cod_asistencia COD on COD.id_codigo = ASIS.cod_asistencia
-WHERE CUR.id_curso = ?;`;
+WHERE CUR.id_curso = ? ORDER BY ALU.apellido;`;
 
 export const selectCurso = `SELECT * FROM cursos`;
 export const mostrarCursos = `SELECT AL.id_curso as id_curso, AL.nombre as nombre   FROM cursos`;
