@@ -11,7 +11,7 @@ db.all("SELECT DATE() AS fecha", (error, result) => {
 
 
 //TODO: Función para convertir el formato de fecha de "dd/mm/aaaa" a "dd-mm-aaaa"
-function convertirFormatoFecha(fecha) {
+/* function convertirFormatoFecha(fecha) {
   const partes = fecha.split('/');
   const fechaFormateada = partes.join('-');
   return fechaFormateada;
@@ -38,7 +38,7 @@ db.all("SELECT id_asistencia, fecha FROM asistencia", (error, registros) => {
           }
       });
   });
-});
+}); */
 //FIN formateo fechas
 
 
