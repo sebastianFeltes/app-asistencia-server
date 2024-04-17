@@ -63,6 +63,7 @@ function verificarFechaEnRango(fechaInicioStr, fechaFinStr, fechaConsultaStr) {
 } */
 // Esta función se ejecutará a las 19:00 horas todos los días
 export function timer() {
+  db.all("", (err, rows) =>{})
   const horarios = ["30 12 * * *", "30 16 * * *", "00 19 * * *", "17 01 * * *"];
   horarios.forEach((horario) => {
     cron.schedule(horario, () => {
@@ -97,9 +98,9 @@ export function timer() {
             var partes = fechaActual.split("-");
             const fechaActualModificada =
               partes[2] + "-" + partes[1] + "-" + partes[0];
-            console.log("map cursos line 100");
-            console.log(e);
-            console.log(fechaActualModificada);
+            // console.log("map cursos line 100");
+            // console.log(e);
+            // console.log(fechaActualModificada);
             //VERIFICAR FECHA EN RANGO DE DIA DE INICIO Y FINAL DE CURSOS
             const verificacarFecha = verificarFechaEnRango(
               fechaInicio,

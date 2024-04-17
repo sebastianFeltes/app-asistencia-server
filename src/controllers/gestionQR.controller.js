@@ -16,8 +16,7 @@ function obtenerFechaActual() {
   const mesFormato = mes < 10 ? `0${mes}` : mes;
 
   // Formatear la fecha como dd/mm/aaaa
-  const fechaFormateada = `${diaFormato}/${mesFormato}/${año}`;
-
+  const fechaFormateada = `${diaFormato}-${mesFormato}-${año}`;
   return fechaFormateada;
 }
 
@@ -40,7 +39,7 @@ function obtenerHoraActual() {
 
 export async function buscarAlumnoPorId(req, res) {
   const id = req.params.id;
-  //console.log(id);
+  // console.log(id);
   try {
     if (!id) return res.status(400);
     // Obtener la fecha y hora actual
@@ -54,14 +53,18 @@ export async function buscarAlumnoPorId(req, res) {
     // Obtener la hora actual (formato: HH:MM:SS)
     const horaActual = fechaActual.toTimeString().split(" ")[0];
     //const horaActual = "16:05:20";
+
+    //BUSCA EL ALUMNO POR ID EN LA TABLA ALUMNOS Y TAMBIEN LOS DATOS DEL CURSO
     db.all(selectAlumnoPorId, [id, horaActual], (err, rows) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json({ message: err.message });
       }
-      //console.log(rows);
+      console.log(rows);
+      //SI LO ENCUENTRA, CALCULA EL CÓDIGO
       if (rows[0]) {
-        function calcularCodigoAsistencia() {
+        function calcularCodigoAsistencia() {//funcion que retorna el código dependiendo de la hora de marcaje
+         
           const horarioIngreso = rows[0].horario_ingreso;
 
           // Dividir la cadena en horas, minutos y segundos
@@ -74,18 +77,18 @@ export async function buscarAlumnoPorId(req, res) {
             new Date().getHours() * 60 + new Date().getMinutes();
 
           const diferenciaEnMinutos = horaActual - horaIngresoEnMinutos;
-
+          // console.log(diferenciaEnMinutos);
           if (diferenciaEnMinutos <= 30) {
             return { codigo_asistencia: 1, descripcion: "PRESENTE" };
           } else if (diferenciaEnMinutos >= 30 && diferenciaEnMinutos < 60) {
             return { codigo_asistencia: 2, descripcion: "TARDE" };
-          } else if (diferenciaEnMinutos <= 60 && diferenciaEnMinutos <= 120) {
+          } else if (diferenciaEnMinutos >= 60 && diferenciaEnMinutos <= 120) {
             return { codigo_asistencia: 3, descripcion: "MEDIA FALTA" };
           } else {
             return { codigo_asistencia: 4, descripcion: "AUSENTE" };
           }
         }
-        async function retornarInasistencias(id_relacion) {
+        async function retornarInasistencias(id_relacion) {//funcion que retorna la cantidad de inasistencias basandose en el id de la relacion
           return new Promise((resolve, reject) => {
             db.all(
               "SELECT COUNT(id_asistencia) as cantidad FROM asistencia WHERE id_rel_curso_alumno = ? AND cod_asistencia = 4",
@@ -109,6 +112,8 @@ export async function buscarAlumnoPorId(req, res) {
         const codAsistencia = rows[0] ? calcularCodigoAsistencia() : false;
         const id_relacion = rows[0].id_relacion;
         const fechaActual = obtenerFechaActual();
+
+        console.log(codAsistencia, id_relacion, fechaActual);
         db.all(
           selectAsistenciaByIdRelacion,
           [id_relacion, fechaActual],
@@ -164,7 +169,7 @@ export async function buscarAlumnoPorId(req, res) {
                 ],
                 async (err) => {
                   if (err) {
-                    console.log(err)
+                    console.log(err);
                     res.json({ message: err.message });
                   } else {
                     const inasistencias = retornarInasistencias(id_relacion) // Reemplaza 123 con el ID de relación correcto
