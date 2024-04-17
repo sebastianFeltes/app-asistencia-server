@@ -49,7 +49,7 @@ export async function buscarAlumnoPorId(req, res) {
     const dia = fechaActual.getDate().toString().padStart(2, "0");
     const mes = (fechaActual.getMonth() + 1).toString().padStart(2, "0");
     const año = fechaActual.getFullYear();
-    // Formatear la fecha en "dd/mm/aaaa"
+    // Formatear la fecha en "dd-mm-aaaa"
     const fechaActualFormateada = `${dia}-${mes}-${año}`;
     // Obtener la hora actual (formato: HH:MM:SS)
     const horaActual = fechaActual.toTimeString().split(" ")[0];
