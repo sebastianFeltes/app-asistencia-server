@@ -4,7 +4,7 @@ SELECT * FROM docentes WHERE nro_dni = ?`;
 export const selectAlumnoPorId = `SELECT AL.id_alumno as id_alumno, AL.nombre as nombre_alumno , AL.apellido as apellido_alumno, AL.nro_dni as dni_alumno, CUR.id_curso as id_curso, CUR.nombre as nombre_curso, CUR.horario_inicio as horario_ingreso, CUR.horario_final as horario_egreso, CUR.cantidad_clases as clases_totales,RCA.id_relacion as id_relacion FROM alumnos AL
 INNER JOIN rel_curso_alumnos RCA ON AL.id_alumno = RCA.id_alumno
 INNER JOIN cursos CUR ON CUR.id_curso = RCA.id_curso
-WHERE AL.id_alumno = ? AND ? BETWEEN CUR.horario_inicio AND CUR.horario_final;`;
+WHERE AL.id_alumno = ? AND ? <= CUR.horario_final;`;
 
 export const insertAsistencia = `INSERT INTO asistencia(id_rel_curso_alumno, fecha, cod_asistencia, hora) VALUES(?,?,?,?)`;
 
