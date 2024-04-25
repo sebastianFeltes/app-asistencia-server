@@ -1,3 +1,4 @@
+import { error } from "console";
 import { db } from "../database/conexion.database.js";
 import {
   insertAsistencia,
@@ -72,11 +73,12 @@ function calcularCodigoAsistencia(horarioIngreso, horaActual) {
 export async function marcarPresente(req, res) {
   try {
     const id_alumno = req.params.id; //primero obtengo el id que viene en la url
+    console.log(id_alumno);
     let relaciones = await buscarRelacionDeAlumnoPorId(id_alumno); //buscar las todas las relaciones del alumno con los cursos
-    // console.log("relaciones");
-    // console.log(relaciones);
+    console.log("relaciones");
+    console.log(relaciones);
     if (relaciones.length > 0) {
-      return relaciones.forEach(async (relacion) => {
+      relaciones.forEach(async (relacion) => {
         //por cada curso que encuentre...
         const id_curso = relacion.id_curso;
         const id_relacion = relacion.id_relacion;
@@ -85,8 +87,8 @@ export async function marcarPresente(req, res) {
         const nroDiaActual = date.getDay();
         const horaActual = obtenerHoraActual();
         const fechaActual = obtenerFechaActual();
-        console.log(relacion);
-        console.log(id_curso, nroDiaActual, horaActual);
+        // console.log(relacion);
+        // console.log(id_curso, nroDiaActual, horaActual);
 
         const curso = await dbGet(
           //busco los datos del curso dependiendo del numero del día y el id del curso en las relaciones del alumno
@@ -183,6 +185,8 @@ export async function marcarPresente(req, res) {
             };
             return res.json(alumno);
           }
+        } else {
+          res.json({ error: "Alumno no encontrado para los cursos actuales" });
         }
       });
     } else {
