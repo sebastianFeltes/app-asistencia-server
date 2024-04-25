@@ -68,8 +68,8 @@ function verificarFechaEnRango(fechaInicioStr, fechaFinStr, fechaConsultaStr) {
 // Esta función se debe ejecutar a las 12:30, 16:30 y 20:00 horas todos los días
 export async function timer() {
   // db.all("", (err, rows) => {});
-  // const horarios = ["30 12 * * *", "30 16 * * *", "00 20 * * *", "17 01 * * *"];
-  const horarios = ["02 16 * * *"];
+  const horarios = ["31 12 * * *", "31 16 * * *", "01 20 * * *", "17 01 * * *"];
+  // const horarios = ["02 16 * * *"];
   horarios.forEach((horario) => {
     cron.schedule(horario, async () => {
       //Primero obtengo el día actual
