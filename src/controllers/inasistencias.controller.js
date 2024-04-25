@@ -6,6 +6,10 @@ import {
   selectCursoByDia,
   selectRelCursoAlumnos,
 } from "../database/queries.database.js";
+//funciones de get y all contra la base de datos
+import util from "util";
+const dbGet = util.promisify(db.get.bind(db));
+const dbAll = util.promisify(db.all.bind(db));
 
 function obtenerFechaActual() {
   const fecha = new Date();
@@ -61,95 +65,144 @@ function verificarFechaEnRango(fechaInicioStr, fechaFinStr, fechaConsultaStr) {
 /* function marcarAusentes(dias) {
   let diasCurso;
 } */
-// Esta función se ejecutará a las 19:00 horas todos los días
-export function timer() {
-  db.all("", (err, rows) =>{})
-  const horarios = ["30 12 * * *", "30 16 * * *", "00 19 * * *", "17 01 * * *"];
+// Esta función se debe ejecutar a las 12:30, 16:30 y 20:00 horas todos los días
+export async function timer() {
+  // db.all("", (err, rows) => {});
+  // const horarios = ["30 12 * * *", "30 16 * * *", "00 20 * * *", "17 01 * * *"];
+  const horarios = ["02 16 * * *"];
   horarios.forEach((horario) => {
-    cron.schedule(horario, () => {
-      // Lógica para ejecutar la función a las 19:00 horas de cada día
+    cron.schedule(horario, async () => {
       //Primero obtengo el día actual
-      const today = new Date().getDay();
+      // console.log("Timer activado.");
+      //numero del dia
+      const todayNum = new Date().getDay();
+      //fecha actual
       const fechaActual = obtenerFechaActual();
       const horaActual = obtenerHoraActual();
       var partes = fechaActual.split("-");
-      const fechaActualConBarras =
-        partes[0] + "/" + partes[1] + "/" + partes[2];
-      console.log("timer func line 77");
-      console.log(fechaActualConBarras);
-
-      //Luego, dependiendo del día ejecuto la funcion que pone "ausentes" en los cursos de esos días
-      //SELECCIONAR LOS CURSOS QUE SE DICTAN EL DIA ACTUAL (lun, mar, mie, etc)
-      db.all(selectCursoByDia, [today, horaActual, horaActual], (err, rows) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        const cursos = rows;
-        console.log("cursos line 88");
-        console.log(rows);
-
-        if (cursos.length > 0) {
-          cursos.map((e) => {
-            const id_curso = e.id_curso;
-            const fechaInicio = e.fecha_inicio;
-            const fechaFinal = e.fecha_final;
-
-            var partes = fechaActual.split("-");
-            const fechaActualModificada =
-              partes[2] + "-" + partes[1] + "-" + partes[0];
-            // console.log("map cursos line 100");
-            // console.log(e);
-            // console.log(fechaActualModificada);
-            //VERIFICAR FECHA EN RANGO DE DIA DE INICIO Y FINAL DE CURSOS
-            const verificacarFecha = verificarFechaEnRango(
-              fechaInicio,
-              fechaFinal,
-              fechaActualModificada
+      //formateo del dia
+      const fechaActualConGuiones =
+        partes[2] + "-" + partes[1] + "-" + partes[0];
+      // console.log("timer func line 77");
+      // console.log(todayNum);
+      // console.log(fechaActualConGuiones);
+      const fechaActualConGuionesDDMMAAAA =
+        partes[0] + "-" + partes[1] + "-" + partes[2];
+      //traigo los cursos para este dia y este horario
+      const cursosDelDia = await dbAll(
+        `SELECT CUR.id_curso FROM cursos CUR
+      INNER JOIN rel_curso_dia RCD ON  CUR.id_curso = RCD.id_curso
+      WHERE RCD.id_dia = ? AND ? BETWEEN CUR.horario_inicio AND CUR.horario_final
+      AND ? BETWEEN CUR.fecha_inicio AND CUR.fecha_final;
+      `,
+        [todayNum, horaActual, fechaActualConGuiones]
+      );
+      // console.log(cursosDelDia);
+      //recorro los cursos del dia y en esa hora
+      cursosDelDia.forEach(async (curso) => {
+        const id_curso = curso.id_curso;
+        //traigo las realciones dependiendo del curso
+        const relacionesAlumnos = await dbAll(
+          `SELECT id_relacion FROM rel_curso_alumnos
+        WHERE id_curso = ?`,
+          [id_curso]
+        );
+        // console.log(id_curso);
+        //recorro relacion por relacion para verificar en asistencias los que estan presentes
+        relacionesAlumnos.forEach(async (relacion) => {
+          const id_relacion = relacion.id_relacion;
+          const presente = await dbGet(
+            `SELECT id_rel_curso_alumno FROM asistencia
+          WHERE id_rel_curso_alumno = ?
+          AND fecha = ?`,
+            [id_relacion, fechaActualConGuionesDDMMAAAA]
+          );
+          if (!presente) {
+            db.run(
+              `
+            INSERT INTO asistencia (id_rel_curso_alumno,fecha, hora, cod_asistencia) VALUES(?,?,?,?)
+            `,
+              [id_relacion, fechaActualConGuionesDDMMAAAA, horaActual, 4]
             );
+          }
+          // console.log("presente");
+          // console.log(presente);
+          // console.log(fechaActualConGuionesDDMMAAAA);
+          // console.log(id_relacion);
+        });
+      });
+      return;
 
-            console.log(verificacarFecha);
-            if (verificacarFecha) {
-              console.log("dentro de fechas");
-              db.all(selectRelCursoAlumnos, [id_curso], (err, rows) => {
-                if (err) {
-                  return console.log(err);
-                }
-                const relaciones = rows;
-                console.log(relaciones);
-                if (relaciones.length > 0) {
-                  relaciones.map((e) => {
-                    const id_relacion = e.id_relacion;
-                    db.all(
-                      selectAsistenciaByIdRelacion,
-                      [id_relacion, fechaActualConBarras],
-                      (err, rows) => {
-                        if (err) {
-                          return console.log(err);
+      //LLAMAR A MARCAR AUSENCIAS
+    });
+  });
+}
+
+function marcarAusencias() {
+  db.all(selectCursoByDia, [today, horaActual, horaActual], (err, rows) => {
+    if (err) {
+      return console.log(err);
+    }
+    const cursos = rows;
+    console.log("cursos line 88");
+    console.log(rows);
+    if (cursos.length > 0) {
+      cursos.map((e) => {
+        const id_curso = e.id_curso;
+        const fechaInicio = e.fecha_inicio;
+        const fechaFinal = e.fecha_final;
+
+        var partes = fechaActual.split("-");
+        const fechaActualModificada =
+          partes[2] + "-" + partes[1] + "-" + partes[0];
+        // console.log("map cursos line 100");
+        // console.log(e);
+        // console.log(fechaActualModificada);
+        //VERIFICAR FECHA EN RANGO DE DIA DE INICIO Y FINAL DE CURSOS
+        const verificacarFecha = verificarFechaEnRango(
+          fechaInicio,
+          fechaFinal,
+          fechaActualModificada
+        );
+
+        console.log(verificacarFecha);
+
+        if (verificacarFecha) {
+          console.log("dentro de fechas");
+          db.all(selectRelCursoAlumnos, [id_curso], (err, rows) => {
+            if (err) {
+              return console.log(err);
+            }
+            const relaciones = rows;
+            console.log(relaciones);
+            if (relaciones.length > 0) {
+              relaciones.map((e) => {
+                const id_relacion = e.id_relacion;
+                db.all(
+                  selectAsistenciaByIdRelacion,
+                  [id_relacion, fechaActualConBarras],
+                  (err, rows) => {
+                    if (err) {
+                      return console.log(err);
+                    }
+                    if (rows.length <= 0) {
+                      db.all(
+                        insertAsistencia,
+                        [id_relacion, fechaActual, 4, horaActual],
+                        (err, rows) => {
+                          if (err) {
+                            return console.log(err);
+                          }
                         }
-                        if (rows.length <= 0) {
-                          db.all(
-                            insertAsistencia,
-                            [id_relacion, fechaActual, 4, horaActual],
-                            (err, rows) => {
-                              if (err) {
-                                return console.log(err);
-                              }
-                            }
-                          );
-                        }
-                      }
-                    );
-                  });
-                }
+                      );
+                    }
+                  }
+                );
               });
             }
           });
         }
       });
-
-      // Llama a la función para marcar ausentes aquí
-      //marcarAusentes();
-    });
+    }
   });
 }

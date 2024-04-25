@@ -158,7 +158,8 @@ export function modificarDatosAlumno(req, res) {
               return res.json({ message: err.message }).status(500);
             }
             // console.log(cursos);
-            db.all(
+            //FIX: NO ELIMINAR RELACION, MODIFICAR
+            /*             db.all(
               "DELETE FROM rel_curso_alumnos WHERE id_alumno = ?",
               [id_alumno],
               (err, row) => {
@@ -168,16 +169,39 @@ export function modificarDatosAlumno(req, res) {
                 }
                 // console.log(row);
               }
-            );
+            ); */
+            // console.log(cursos);
+            // console.log(id_alumno);
+            //MODIFICAR CURSOS A LOS QUE ASISTE
             cursos.map((curso) => {
+              //mapea los id de los cursos
               db.all(
-                "INSERT INTO rel_curso_alumnos (id_alumno, id_curso) VALUES (?,?)",
+                "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND  id_curso = ? ",
                 [id_alumno, curso],
-                (err) => {
-                  if (err) {
-                    console.log(err);
-                    return res.json(err.message);
+                (err, rows) => {
+                  if (err) throw err.message;
+                  // console.log("linea 183");
+                  // console.log(rows[0]);
+                  const id_relacion = rows[0]; //si no existe relacion (o sea que no el alumno no esta asignado a ese curso)
+                  if (!id_relacion) {
+                    let ultima_relacion = undefined;
+                    db.all(
+                      "SELECT MAX(id_relacion) AS last_id FROM rel_curso_alumnos",
+                      (err, row) => {
+                        if (err) throw err.message;
+                        console.log("linea 190");
+                        ultima_relacion = row[0].last_id;
+                      }
+                    );
+                    db.all(
+                      "INSERT INTO rel_curso_alumnos VALUES (?+1,?,?)", //inserta la relacion
+                      [ultima_relacion, id_alumno, curso],
+                      (err) => {
+                        if (err) throw err.message;
+                      }
+                    );
                   }
+                  // rows;
                 }
               );
             });
