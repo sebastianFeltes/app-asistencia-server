@@ -216,3 +216,23 @@ export function modificarDatosAlumno(req, res) {
     return res.json({ message: error.message });
   }
 }
+
+export async function enviarRegistroAsistencia(req, res) {
+  try {
+    db.all(
+      `SELECT ASIS.fecha AS fecha, ASIS.hora AS hora, ASIS.cod_asistencia AS cod_asistencia,
+      ALU.apellido AS apellido_alumno, ALU.nombre AS nombre_alumno, ALU.nro_dni AS dni_alumno FROM asistencia ASIS
+    INNER JOIN rel_curso_alumnos RCA ON ASIS.id_rel_curso_alumno = RCA.id_relacion
+    INNER JOIN alumnos ALU ON RCA.id_alumno = ALU.id_alumno;
+    `,
+      (err, row) => {
+        if (err) throw err.message;
+        const asistencias = row;
+        return res.json(asistencias);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "Internal server error" });
+  }
+}
