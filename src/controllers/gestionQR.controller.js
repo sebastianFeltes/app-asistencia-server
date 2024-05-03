@@ -77,6 +77,7 @@ async function obtenerAsistenciasAlumno(id_alumno) {
   WHERE RCA.id_alumno = ? AND cod_asistencia = 4`,
     [id_alumno]
   );
+  
   // console.log(data);
   return data;
 }
@@ -103,8 +104,9 @@ async function buscarRelacionPorAlumnoCurso(id_alumno, id_curso) {
       "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND id_curso = ?",
       [id_alumno, id_curso]
     );
+    // console.log(id_relacion)
     // Puedes retornar las relaciones aquí para que estén disponibles para su uso en otra función
-    return id_relacion;
+    if (id_relacion) return id_relacion.id_relacion;
   } catch (error) {
     console.log(error.message);
     throw new Error("Error al buscar el alumno por ID");
@@ -136,12 +138,13 @@ export async function marcarPresente(req, res) {
   // console.log(cursos);
   if (!cursos || !cursos.length)
     return res.json({ error: "Alumno no encontrado para los cursos actuales" });
+
   cursos.forEach(async (curso) => {
     const id_relacion = await buscarRelacionPorAlumnoCurso(
       id_alumno,
       curso.id_curso
     );
-    // console.log(id_relacion);
+    //  console.log(id_relacion.id_relacion);
 
     const horaActual = obtenerHoraActual();
     const fechaActual = obtenerFechaActual();
@@ -150,7 +153,7 @@ export async function marcarPresente(req, res) {
       ? calcularCodigoAsistencia(curso.horario_inicio, horaActual)
       : null;
 
-    if (curso) {
+    if (id_relacion) {
       //ESTRUCTURA QUE ESPERA EL CLIENTE
       // data_alumno_curso: {
       //   apellido_alumno: "apellido",
@@ -163,45 +166,52 @@ export async function marcarPresente(req, res) {
       // hora_ingreso: "17:00:00",
       // cod_asistencia: { descripcion: "Tipo de asistencia" }
 
-      //VERIFICAR SI LA ASISTENCIA YA SE CARGO
-      let asistenciaCargada =
-        (await dbGet(
-          `SELECT cod_asistencia, hora FROM asistencia WHERE id_rel_curso_alumno = ? AND fecha = ?`,
-          [id_relacion.id_relacion, fechaActual]
-        )) || null;
+      //VERIFICAR SI LA ASISTENCIA YA SE CARGO}
+
+      const relacion = await id_relacion;
+      let asistenciaCargada = await dbGet(
+        `SELECT cod_asistencia, hora FROM asistencia WHERE id_rel_curso_alumno = ? AND fecha = ?`,
+        [relacion, fechaActual]
+      );
 
       //BUSCAR LOS DATOS DEL ALUMNO y CURSO
-      let data_alumno_curso =
-        (await obtenerDatosAlumno(id_alumno, curso.id_curso)) || null;
+      let data_alumno_curso = await obtenerDatosAlumno(
+        id_alumno,
+        curso.id_curso
+      );
 
       //OBTENER LAS INASISTENCIAS TOTALES
-      let asistenciasTotales =
-        (await obtenerAsistenciasAlumno(id_alumno)) || null;
+      let asistenciasTotales = await obtenerAsistenciasAlumno(id_alumno);
 
+      console.log("linea 184");
+      console.log(await asistenciaCargada);
       //SI LA ASISTENCIA NO ESTA CARGADA HOY, EJECUTA  LA FUNCIÓN PARA INSERTARLA EN LA BASE DE DATOS
       if (!asistenciaCargada) {
         // console.log("linea 141");
         // console.log("cargar asistencia");
         // INSERTAR LA ASISTENCIA
-        db.run(
+        return db.run(
           "INSERT INTO asistencia(id_rel_curso_alumno, fecha, cod_asistencia, hora) VALUES(?,?,?,?)",
-          [id_relacion.id_relacion, fechaActual, cod_asistencia, horaActual]
+          [id_relacion, fechaActual, cod_asistencia, horaActual],
+          (err) => {
+            if (err) throw err.message;
+            const alumno = {
+              data_alumno_curso: data_alumno_curso,
+              cantidad_inasistencias: asistenciasTotales.cantidad_inasistencias,
+              hora_ingreso: horaActual,
+              cod_asistencia: {
+                descripcion:
+                  cod_asistencia == 1
+                    ? "presente"
+                    : cod_asistencia == 2
+                    ? "tarde"
+                    : "ausente",
+              },
+            };
+            return res.json(alumno);
+          }
         );
-
-        const alumno = {
-          data_alumno_curso: data_alumno_curso,
-          cantidad_inasistencias: asistenciasTotales.cantidad_inasistencias,
-          hora_ingreso: horaActual,
-          cod_asistencia: {
-            descripcion:
-              cod_asistencia == 1
-                ? "presente"
-                : cod_asistencia == 2
-                ? "tarde"
-                : "ausente",
-          },
-        };
-        return res.json(alumno);
+        // return;
       } else {
         // console.log("asistencia ya cargada");
         //SI ESTA CARGADA MANDA QUE YA CARGÓ LA ASISTENCIA HOY
@@ -223,8 +233,6 @@ export async function marcarPresente(req, res) {
         };
         return res.json(alumno);
       }
-    } else {
-      res.json({ error: "Alumno no encontrado para los cursos actuales" });
     }
   });
 }
