@@ -10,19 +10,25 @@ const dbGet = util.promisify(db.get.bind(db));
 const dbAll = util.promisify(db.all.bind(db));
 
 function obtenerFechaActual() {
+  // Obtener la fecha actual
   const fecha = new Date();
+  
+  // Obtener el día, el mes y el año
   const dia = fecha.getDate();
   const mes = fecha.getMonth() + 1; // Los meses van de 0 a 11, por eso se suma 1
   const año = fecha.getFullYear();
 
   // Asegurarse de tener dos dígitos para el día y el mes (agregando un 0 al inicio si es necesario)
-  const diaFormato = dia < 10 ? `0${dia}` : dia;
-  const mesFormato = mes < 10 ? `0${mes}` : mes;
+  const diaFormateado = dia < 10 ? `0${dia}` : dia;
+  const mesFormateado = mes < 10 ? `0${mes}` : mes;
 
   // Formatear la fecha como dd/mm/aaaa
-  const fechaFormateada = `${diaFormato}-${mesFormato}-${año}`;
+  const fechaFormateada = `${diaFormateado}-${mesFormateado}-${año}`;
+  
+  // Devolver la fecha formateada
   return fechaFormateada;
 }
+
 
 function obtenerHoraActual() {
   const fecha = new Date();
@@ -77,7 +83,7 @@ async function obtenerAsistenciasAlumno(id_alumno) {
   WHERE RCA.id_alumno = ? AND cod_asistencia = 4`,
     [id_alumno]
   );
-  
+
   // console.log(data);
   return data;
 }
@@ -96,22 +102,42 @@ async function obtenerDatosAlumno(id_alumno, id_curso) {
   return data;
 }
 
-async function buscarRelacionPorAlumnoCurso(id_alumno, id_curso) {
+async function buscarRelacionPorAlumnoCurso(id_alumno, cursos) {
   try {
-    if (!id_alumno) return res.status(400).send("Falta el ID del alumno");
+    // Crear un array de promesas para ejecutar consultas a la base de datos
+    const relacionesPromesas = cursos.map(curso =>
+      new Promise((resolve, reject) => {
+        db.all(
+          "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND id_curso = ?",
+          [id_alumno, curso.id_curso],
+          (err, rows) => {
+            if (err) reject(err.message);
 
-    const id_relacion = await dbGet(
-      "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND id_curso = ?",
-      [id_alumno, id_curso]
+            // Resolver la promesa con la relación si se encontró una, de lo contrario, resolver con null
+            if (rows.length > 0) {
+              resolve({ relacion: rows[0].id_relacion, curso: curso.id_curso });
+            } else {
+              resolve(null);
+            }
+          }
+        );
+      })
     );
-    // console.log(id_relacion)
-    // Puedes retornar las relaciones aquí para que estén disponibles para su uso en otra función
-    if (id_relacion) return id_relacion.id_relacion;
+
+    // Esperar a que todas las promesas se resuelvan y obtener los resultados
+    const relaciones = await Promise.all(relacionesPromesas);
+    
+    // Filtrar relaciones que no sean nulas
+    const relacionesValidas = relaciones.filter(relacion => relacion !== null);
+
+    return relacionesValidas;
   } catch (error) {
-    console.log(error.message);
-    throw new Error("Error al buscar el alumno por ID");
+    // Capturar y manejar errores
+    console.error("Error en buscarRelacionPorAlumnoCurso:", error.message);
+    throw new Error("Error al buscar la relación entre el alumno y los cursos");
   }
 }
+
 
 //OTRO ENFOQUE:
 //CUANDO LLEGA EL ID DEL ALUMNO, DEPENDIENDO DE LA HORA, OBTENER EL CURSO, LUEGO OBTENER
@@ -131,108 +157,78 @@ async function obtenerCursoPorHora() {
   return cursos;
 }
 
+
 export async function marcarPresente(req, res) {
-  const id_alumno = req.params.id; //primero obtengo el id que viene en la url
+  try {
+    // Extraer el ID del alumno de la solicitud
+    const id_alumno = req.params.id;
 
-  const cursos = await obtenerCursoPorHora();
-  // console.log(cursos);
-  if (!cursos || !cursos.length)
-    return res.json({ error: "Alumno no encontrado para los cursos actuales" });
+    // Obtener los cursos actuales
+    const cursos = await obtenerCursoPorHora();
+    if (!cursos || cursos.length === 0)
+      return res.json({
+        error: "No se encontraron cursos en los horarios actuales",
+      });
 
-  cursos.forEach(async (curso) => {
-    const id_relacion = await buscarRelacionPorAlumnoCurso(
-      id_alumno,
-      curso.id_curso
-    );
-    //  console.log(id_relacion.id_relacion);
+    // Buscar las relaciones del alumno con los cursos actuales
+    const relaciones = await buscarRelacionPorAlumnoCurso(id_alumno, cursos);
+    if (relaciones.length === 0)
+      return res.json({
+        error: "El alumno no está inscrito en ningún curso actualmente",
+      });
 
+    // Obtener la hora y fecha actual
     const horaActual = obtenerHoraActual();
     const fechaActual = obtenerFechaActual();
 
-    const cod_asistencia = curso
-      ? calcularCodigoAsistencia(curso.horario_inicio, horaActual)
-      : null;
+    // Obtener la relación y el curso correspondiente
+    const id_relacion = relaciones[0].relacion;
+    const curso = cursos.find(curso => curso.id_curso === relaciones[0].curso);
 
-    if (id_relacion) {
-      //ESTRUCTURA QUE ESPERA EL CLIENTE
-      // data_alumno_curso: {
-      //   apellido_alumno: "apellido",
-      //   nombre_alumno: "nombre",
-      //   dni_alumno: 12222333,
-      //   nombre_curso: "curso al que ingresa",
-      //   clases_totales: 10,
-      // },
-      // cantidad_inasistencias: 1,
-      // hora_ingreso: "17:00:00",
-      // cod_asistencia: { descripcion: "Tipo de asistencia" }
+    // Calcular el código de asistencia
+    const cod_asistencia = calcularCodigoAsistencia(curso.horario_inicio, horaActual);
 
-      //VERIFICAR SI LA ASISTENCIA YA SE CARGO}
+    // Verificar si la asistencia ya está registrada para hoy
+    const asistenciaCargada = await dbGet(
+      `SELECT cod_asistencia, hora FROM asistencia WHERE id_rel_curso_alumno = ? AND fecha = ?`,
+      [id_relacion, fechaActual]
+    );
 
-      const relacion = await id_relacion;
-      let asistenciaCargada = await dbGet(
-        `SELECT cod_asistencia, hora FROM asistencia WHERE id_rel_curso_alumno = ? AND fecha = ?`,
-        [relacion, fechaActual]
+    if (!asistenciaCargada) {
+      // Si la asistencia no está registrada, insertarla en la base de datos
+      await db.run(
+        "INSERT INTO asistencia(id_rel_curso_alumno, fecha, cod_asistencia, hora) VALUES(?,?,?,?)",
+        [id_relacion, fechaActual, cod_asistencia, horaActual]
       );
 
-      //BUSCAR LOS DATOS DEL ALUMNO y CURSO
-      let data_alumno_curso = await obtenerDatosAlumno(
-        id_alumno,
-        curso.id_curso
-      );
+      // Construir el objeto de respuesta para el alumno
+      const alumno = {
+        data_alumno_curso: await obtenerDatosAlumno(id_alumno, curso.id_curso),
+        cantidad_inasistencias: (await obtenerAsistenciasAlumno(id_alumno)).cantidad_inasistencias,
+        hora_ingreso: horaActual,
+        cod_asistencia: {
+          descripcion: cod_asistencia === 1 ? "presente" : (cod_asistencia === 2 ? "tarde" : "ausente")
+        }
+      };
 
-      //OBTENER LAS INASISTENCIAS TOTALES
-      let asistenciasTotales = await obtenerAsistenciasAlumno(id_alumno);
+      return res.json(alumno);
+    } else {
+      // Si la asistencia ya está registrada, devolver la información existente
+      const alumno = {
+        data_alumno_curso: await obtenerDatosAlumno(id_alumno, curso.id_curso),
+        cantidad_inasistencias: (await obtenerAsistenciasAlumno(id_alumno)).cantidad_inasistencias,
+        hora_ingreso: asistenciaCargada.hora,
+        cod_asistencia: {
+          re_scaned: true,
+          descripcion: asistenciaCargada.cod_asistencia === 1 ? "presente" : (asistenciaCargada.cod_asistencia === 2 ? "tarde" : "ausente")
+        }
+      };
 
-      console.log("linea 184");
-      console.log(await asistenciaCargada);
-      //SI LA ASISTENCIA NO ESTA CARGADA HOY, EJECUTA  LA FUNCIÓN PARA INSERTARLA EN LA BASE DE DATOS
-      if (!asistenciaCargada) {
-        // console.log("linea 141");
-        // console.log("cargar asistencia");
-        // INSERTAR LA ASISTENCIA
-        return db.run(
-          "INSERT INTO asistencia(id_rel_curso_alumno, fecha, cod_asistencia, hora) VALUES(?,?,?,?)",
-          [id_relacion, fechaActual, cod_asistencia, horaActual],
-          (err) => {
-            if (err) throw err.message;
-            const alumno = {
-              data_alumno_curso: data_alumno_curso,
-              cantidad_inasistencias: asistenciasTotales.cantidad_inasistencias,
-              hora_ingreso: horaActual,
-              cod_asistencia: {
-                descripcion:
-                  cod_asistencia == 1
-                    ? "presente"
-                    : cod_asistencia == 2
-                    ? "tarde"
-                    : "ausente",
-              },
-            };
-            return res.json(alumno);
-          }
-        );
-        // return;
-      } else {
-        // console.log("asistencia ya cargada");
-        //SI ESTA CARGADA MANDA QUE YA CARGÓ LA ASISTENCIA HOY
-        // "Ud ya ha registrado la asistencia el día de hoy"
-        // console.log(asistenciaCargada);
-        const alumno = {
-          data_alumno_curso: data_alumno_curso,
-          cantidad_inasistencias: asistenciasTotales.cantidad_inasistencias,
-          hora_ingreso: asistenciaCargada.hora,
-          cod_asistencia: {
-            re_scaned: true,
-            descripcion:
-              asistenciaCargada.cod_asistencia == 1
-                ? "presente"
-                : asistenciaCargada.cod_asistencia == 2
-                ? "tarde"
-                : "ausente",
-          },
-        };
-        return res.json(alumno);
-      }
+      return res.json(alumno);
     }
-  });
+  } catch (error) {
+    // Capturar y manejar errores
+    console.error("Error en marcarPresente:", error.message);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
 }
