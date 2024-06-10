@@ -12,7 +12,7 @@ const dbAll = util.promisify(db.all.bind(db));
 function obtenerFechaActual() {
   // Obtener la fecha actual
   const fecha = new Date();
-  
+
   // Obtener el día, el mes y el año
   const dia = fecha.getDate();
   const mes = fecha.getMonth() + 1; // Los meses van de 0 a 11, por eso se suma 1
@@ -24,11 +24,10 @@ function obtenerFechaActual() {
 
   // Formatear la fecha como dd/mm/aaaa
   const fechaFormateada = `${diaFormateado}-${mesFormateado}-${año}`;
-  
+
   // Devolver la fecha formateada
   return fechaFormateada;
 }
-
 
 function obtenerHoraActual() {
   const fecha = new Date();
@@ -105,30 +104,36 @@ async function obtenerDatosAlumno(id_alumno, id_curso) {
 async function buscarRelacionPorAlumnoCurso(id_alumno, cursos) {
   try {
     // Crear un array de promesas para ejecutar consultas a la base de datos
-    const relacionesPromesas = cursos.map(curso =>
-      new Promise((resolve, reject) => {
-        db.all(
-          "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND id_curso = ?",
-          [id_alumno, curso.id_curso],
-          (err, rows) => {
-            if (err) reject(err.message);
+    const relacionesPromesas = cursos.map(
+      (curso) =>
+        new Promise((resolve, reject) => {
+          db.all(
+            "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND id_curso = ?",
+            [id_alumno, curso.id_curso],
+            (err, rows) => {
+              if (err) reject(err.message);
 
-            // Resolver la promesa con la relación si se encontró una, de lo contrario, resolver con null
-            if (rows.length > 0) {
-              resolve({ relacion: rows[0].id_relacion, curso: curso.id_curso });
-            } else {
-              resolve(null);
+              // Resolver la promesa con la relación si se encontró una, de lo contrario, resolver con null
+              if (rows.length > 0) {
+                resolve({
+                  relacion: rows[0].id_relacion,
+                  curso: curso.id_curso,
+                });
+              } else {
+                resolve(null);
+              }
             }
-          }
-        );
-      })
+          );
+        })
     );
 
     // Esperar a que todas las promesas se resuelvan y obtener los resultados
     const relaciones = await Promise.all(relacionesPromesas);
-    
+
     // Filtrar relaciones que no sean nulas
-    const relacionesValidas = relaciones.filter(relacion => relacion !== null);
+    const relacionesValidas = relaciones.filter(
+      (relacion) => relacion !== null
+    );
 
     return relacionesValidas;
   } catch (error) {
@@ -137,7 +142,6 @@ async function buscarRelacionPorAlumnoCurso(id_alumno, cursos) {
     throw new Error("Error al buscar la relación entre el alumno y los cursos");
   }
 }
-
 
 //OTRO ENFOQUE:
 //CUANDO LLEGA EL ID DEL ALUMNO, DEPENDIENDO DE LA HORA, OBTENER EL CURSO, LUEGO OBTENER
@@ -149,14 +153,13 @@ async function obtenerCursoPorHora() {
   const cursos = await dbAll(
     `SELECT CUR.id_curso, CUR.horario_final, CUR.horario_inicio FROM cursos CUR
     INNER JOIN rel_curso_dia RCD ON CUR.id_curso = RCD.id_curso 
-    WHERE ? BETWEEN time(CUR.horario_inicio, '-20 minutes') AND time(CUR.horario_final)
+    WHERE ? BETWEEN time(CUR.horario_inicio, '-30 minutes') AND time(CUR.horario_final)
     AND RCD.id_dia = ?`,
     [horario, id_dia]
   );
-
+  // console.log(cursos);
   return cursos;
 }
-
 
 export async function marcarPresente(req, res) {
   try {
@@ -183,10 +186,15 @@ export async function marcarPresente(req, res) {
 
     // Obtener la relación y el curso correspondiente
     const id_relacion = relaciones[0].relacion;
-    const curso = cursos.find(curso => curso.id_curso === relaciones[0].curso);
+    const curso = cursos.find(
+      (curso) => curso.id_curso === relaciones[0].curso
+    );
 
     // Calcular el código de asistencia
-    const cod_asistencia = calcularCodigoAsistencia(curso.horario_inicio, horaActual);
+    const cod_asistencia = calcularCodigoAsistencia(
+      curso.horario_inicio,
+      horaActual
+    );
 
     // Verificar si la asistencia ya está registrada para hoy
     const asistenciaCargada = await dbGet(
@@ -204,11 +212,17 @@ export async function marcarPresente(req, res) {
       // Construir el objeto de respuesta para el alumno
       const alumno = {
         data_alumno_curso: await obtenerDatosAlumno(id_alumno, curso.id_curso),
-        cantidad_inasistencias: (await obtenerAsistenciasAlumno(id_alumno)).cantidad_inasistencias,
+        cantidad_inasistencias: (await obtenerAsistenciasAlumno(id_alumno))
+          .cantidad_inasistencias,
         hora_ingreso: horaActual,
         cod_asistencia: {
-          descripcion: cod_asistencia === 1 ? "presente" : (cod_asistencia === 2 ? "tarde" : "ausente")
-        }
+          descripcion:
+            cod_asistencia === 1
+              ? "presente"
+              : cod_asistencia === 2
+              ? "tarde"
+              : "ausente",
+        },
       };
 
       return res.json(alumno);
@@ -216,12 +230,18 @@ export async function marcarPresente(req, res) {
       // Si la asistencia ya está registrada, devolver la información existente
       const alumno = {
         data_alumno_curso: await obtenerDatosAlumno(id_alumno, curso.id_curso),
-        cantidad_inasistencias: (await obtenerAsistenciasAlumno(id_alumno)).cantidad_inasistencias,
+        cantidad_inasistencias: (await obtenerAsistenciasAlumno(id_alumno))
+          .cantidad_inasistencias,
         hora_ingreso: asistenciaCargada.hora,
         cod_asistencia: {
           re_scaned: true,
-          descripcion: asistenciaCargada.cod_asistencia === 1 ? "presente" : (asistenciaCargada.cod_asistencia === 2 ? "tarde" : "ausente")
-        }
+          descripcion:
+            asistenciaCargada.cod_asistencia === 1
+              ? "presente"
+              : asistenciaCargada.cod_asistencia === 2
+              ? "tarde"
+              : "ausente",
+        },
       };
 
       return res.json(alumno);
