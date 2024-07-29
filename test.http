@@ -111,3 +111,7 @@ GET http://localhost:8080/asistencia-alumnos/2 HTTP/1.1
 ###
 GET http://localhost:8080/modificar-asistencia/2 HTTP/1.1
 >>>>>>> 4a1ce636680d229d014b6b2db41f9552e2d6f530
+
+
+###
+DELETE http://localhost:4000/api/alumno/50 HTTP/1.1

@@ -236,3 +236,45 @@ export async function enviarRegistroAsistencia(req, res) {
     return res.json({ error: "Internal server error" });
   }
 }
+
+export async function eliminarAlumno(req, res) {
+  const { id_alumno } = req.params;
+
+  if (!id_alumno) {
+    return res.json({ error: "Alumno no encontrado" });
+  }
+
+  try {
+    // Iniciar una transacción para asegurar la integridad de los datos
+    await db.run("BEGIN TRANSACTION");
+
+    // Eliminar registros de asistencia
+    await db.run(`
+      DELETE FROM asistencia
+      WHERE id_rel_curso_alumno IN (
+        SELECT id_relacion
+        FROM rel_curso_alumnos
+        WHERE id_alumno = ?
+      )
+    `, [id_alumno]);
+
+    // Eliminar registros de rel_curso_alumno
+    await db.run("DELETE FROM rel_curso_alumnos WHERE id_alumno = ?", [id_alumno]);
+
+    // Eliminar registros de detalle_alumnos
+    await db.run("DELETE FROM detalle_alumnos WHERE id_alumno = ?", [id_alumno]);
+
+    // Eliminar el alumno
+    await db.run("DELETE FROM alumnos WHERE id_alumno = ?", [id_alumno]);
+
+    // Confirmar la transacción
+    await db.run("COMMIT");
+
+    return res.json({ success: "Alumno y todos sus registros asociados han sido eliminados correctamente" });
+  } catch (error) {
+    // Revertir la transacción en caso de error
+    await db.run("ROLLBACK");
+    console.error("Error en el controlador eliminarAlumno:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}

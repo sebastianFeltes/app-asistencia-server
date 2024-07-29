@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   datosAlumnos,
+  eliminarAlumno,
   enviarRegistroAsistencia,
   modificarDatosAlumno,
 } from "../controllers/datos-alumnos.controller.js";
@@ -16,5 +17,6 @@ alumnosRouter.post(
   alumnoValidator(modificacionAlumnos),
   modificarDatosAlumno
 );
+alumnosRouter.delete("/api/alumno/:id_alumno", eliminarAlumno)
 
 export default alumnosRouter;
