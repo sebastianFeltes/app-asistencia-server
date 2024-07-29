@@ -40,8 +40,25 @@ import {
 
 export async function datosAlumnos(req, res) {
   const { docente_id, docente_rol } = req.session;
+  const page = parseInt(req.query.page) || 1; // Página actual
+  const size = parseInt(req.query.size) || 10; // Tamaño de página (número de alumnos por página)
+  const offset = (page - 1) * size; // Cálculo del OFFSET
+
   try {
-    db.all(selectAlumnos, async (err, rows) => {
+    // Consulta para obtener la cantidad total de alumnos (para paginación)
+    const totalAlumnosQuery = "SELECT COUNT(*) AS count FROM alumnos";
+    const totalAlumnos = await new Promise((resolve, reject) => {
+      db.get(totalAlumnosQuery, (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(row.count);
+      });
+    });
+
+    // Consulta para obtener los alumnos de la página actual
+    const selectAlumnos = `SELECT * FROM alumnos AL INNER JOIN detalle_alumnos DAL ON AL.id_alumno = DAL.id_alumno LIMIT ? OFFSET ?`;
+    db.all(selectAlumnos, [size, offset], async (err, rows) => {
       if (err) {
         console.log(err.message);
         return res.status(500).json({ mensaje: err.message });
@@ -54,9 +71,14 @@ export async function datosAlumnos(req, res) {
             return { ...alumno, cursos };
           })
         );
-
-        // console.log(dataAlumnos);
-        return res.status(200).json(dataAlumnos);
+        // console.log(res);
+        return res.status(200).json({
+          total: totalAlumnos, // Total de alumnos en la base de datos
+          page,
+          size,
+          totalPages: Math.ceil(totalAlumnos / size), // Número total de páginas
+          data: dataAlumnos,
+        });
       } catch (error) {
         console.log(error);
         return res
@@ -131,7 +153,7 @@ export function modificarDatosAlumno(req, res) {
       (err, rows) => {
         if (err) {
           //error del servidor
-          console.log("1st query");
+          // console.log("1st query");
           console.log(err);
           return res.json({ message: err.message }).status(500);
         }
@@ -158,30 +180,18 @@ export function modificarDatosAlumno(req, res) {
               return res.json({ message: err.message }).status(500);
             }
             // console.log(cursos);
-            //FIX: NO ELIMINAR RELACION, MODIFICAR
-            /*             db.all(
-              "DELETE FROM rel_curso_alumnos WHERE id_alumno = ?",
-              [id_alumno],
-              (err, row) => {
-                if (err) {
-                  console.log(err);
-                  return res.json(err.message);
-                }
-                // console.log(row);
-              }
-            ); */
-            // console.log(cursos);
             // console.log(id_alumno);
             //MODIFICAR CURSOS A LOS QUE ASISTE
-            cursos.map((curso) => {
-              //mapea los id de los cursos
+            /* cursos.map((curso) => {
+              //mapea los id de los cursos que vienen del cliente
               db.all(
-                "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND  id_curso = ? ",
-                [id_alumno, curso],
+                //busca todos los cursos del alumno y compara con los que vienen
+                "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ?",
+                [id_alumno],
                 (err, rows) => {
                   if (err) throw err.message;
                   // console.log("linea 183");
-                  // console.log(rows[0]);
+                  console.log(rows[0]);
                   const id_relacion = rows[0]; //si no existe relacion (o sea que no el alumno no esta asignado a ese curso)
                   if (!id_relacion) {
                     let ultima_relacion = undefined;
@@ -204,8 +214,8 @@ export function modificarDatosAlumno(req, res) {
                   // rows;
                 }
               );
-            });
-            return res.json({ message: "alumno modificado" });
+            }); */
+            return res.json({ message: "alumno modificado, sin eliminacion de curso" });
             //console.log("response")
           }
         );
@@ -249,20 +259,27 @@ export async function eliminarAlumno(req, res) {
     await db.run("BEGIN TRANSACTION");
 
     // Eliminar registros de asistencia
-    await db.run(`
+    await db.run(
+      `
       DELETE FROM asistencia
       WHERE id_rel_curso_alumno IN (
         SELECT id_relacion
         FROM rel_curso_alumnos
         WHERE id_alumno = ?
       )
-    `, [id_alumno]);
+    `,
+      [id_alumno]
+    );
 
     // Eliminar registros de rel_curso_alumno
-    await db.run("DELETE FROM rel_curso_alumnos WHERE id_alumno = ?", [id_alumno]);
+    await db.run("DELETE FROM rel_curso_alumnos WHERE id_alumno = ?", [
+      id_alumno,
+    ]);
 
     // Eliminar registros de detalle_alumnos
-    await db.run("DELETE FROM detalle_alumnos WHERE id_alumno = ?", [id_alumno]);
+    await db.run("DELETE FROM detalle_alumnos WHERE id_alumno = ?", [
+      id_alumno,
+    ]);
 
     // Eliminar el alumno
     await db.run("DELETE FROM alumnos WHERE id_alumno = ?", [id_alumno]);
@@ -270,7 +287,10 @@ export async function eliminarAlumno(req, res) {
     // Confirmar la transacción
     await db.run("COMMIT");
 
-    return res.json({ success: "Alumno y todos sus registros asociados han sido eliminados correctamente" });
+    return res.json({
+      success:
+        "Alumno y todos sus registros asociados han sido eliminados correctamente",
+    });
   } catch (error) {
     // Revertir la transacción en caso de error
     await db.run("ROLLBACK");
