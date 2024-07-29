@@ -158,7 +158,8 @@ export function modificarDatosAlumno(req, res) {
               return res.json({ message: err.message }).status(500);
             }
             // console.log(cursos);
-            db.all(
+            //FIX: NO ELIMINAR RELACION, MODIFICAR
+            /*             db.all(
               "DELETE FROM rel_curso_alumnos WHERE id_alumno = ?",
               [id_alumno],
               (err, row) => {
@@ -168,16 +169,39 @@ export function modificarDatosAlumno(req, res) {
                 }
                 // console.log(row);
               }
-            );
+            ); */
+            // console.log(cursos);
+            // console.log(id_alumno);
+            //MODIFICAR CURSOS A LOS QUE ASISTE
             cursos.map((curso) => {
+              //mapea los id de los cursos
               db.all(
-                "INSERT INTO rel_curso_alumnos (id_alumno, id_curso) VALUES (?,?)",
+                "SELECT id_relacion FROM rel_curso_alumnos WHERE id_alumno = ? AND  id_curso = ? ",
                 [id_alumno, curso],
-                (err) => {
-                  if (err) {
-                    console.log(err);
-                    return res.json(err.message);
+                (err, rows) => {
+                  if (err) throw err.message;
+                  // console.log("linea 183");
+                  // console.log(rows[0]);
+                  const id_relacion = rows[0]; //si no existe relacion (o sea que no el alumno no esta asignado a ese curso)
+                  if (!id_relacion) {
+                    let ultima_relacion = undefined;
+                    db.all(
+                      "SELECT MAX(id_relacion) AS last_id FROM rel_curso_alumnos",
+                      (err, row) => {
+                        if (err) throw err.message;
+                        console.log("linea 190");
+                        ultima_relacion = row[0].last_id;
+                      }
+                    );
+                    db.all(
+                      "INSERT INTO rel_curso_alumnos VALUES (?+1,?,?)", //inserta la relacion
+                      [ultima_relacion, id_alumno, curso],
+                      (err) => {
+                        if (err) throw err.message;
+                      }
+                    );
                   }
+                  // rows;
                 }
               );
             });
@@ -190,5 +214,67 @@ export function modificarDatosAlumno(req, res) {
   } catch (error) {
     console.log(error.message);
     return res.json({ message: error.message });
+  }
+}
+
+export async function enviarRegistroAsistencia(req, res) {
+  try {
+    db.all(
+      `SELECT ASIS.fecha AS fecha, ASIS.hora AS hora, ASIS.cod_asistencia AS cod_asistencia,
+      ALU.apellido AS apellido_alumno, ALU.nombre AS nombre_alumno, ALU.nro_dni AS dni_alumno FROM asistencia ASIS
+    INNER JOIN rel_curso_alumnos RCA ON ASIS.id_rel_curso_alumno = RCA.id_relacion
+    INNER JOIN alumnos ALU ON RCA.id_alumno = ALU.id_alumno;
+    `,
+      (err, row) => {
+        if (err) throw err.message;
+        const asistencias = row;
+        return res.json(asistencias);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "Internal server error" });
+  }
+}
+
+export async function eliminarAlumno(req, res) {
+  const { id_alumno } = req.params;
+
+  if (!id_alumno) {
+    return res.json({ error: "Alumno no encontrado" });
+  }
+
+  try {
+    // Iniciar una transacción para asegurar la integridad de los datos
+    await db.run("BEGIN TRANSACTION");
+
+    // Eliminar registros de asistencia
+    await db.run(`
+      DELETE FROM asistencia
+      WHERE id_rel_curso_alumno IN (
+        SELECT id_relacion
+        FROM rel_curso_alumnos
+        WHERE id_alumno = ?
+      )
+    `, [id_alumno]);
+
+    // Eliminar registros de rel_curso_alumno
+    await db.run("DELETE FROM rel_curso_alumnos WHERE id_alumno = ?", [id_alumno]);
+
+    // Eliminar registros de detalle_alumnos
+    await db.run("DELETE FROM detalle_alumnos WHERE id_alumno = ?", [id_alumno]);
+
+    // Eliminar el alumno
+    await db.run("DELETE FROM alumnos WHERE id_alumno = ?", [id_alumno]);
+
+    // Confirmar la transacción
+    await db.run("COMMIT");
+
+    return res.json({ success: "Alumno y todos sus registros asociados han sido eliminados correctamente" });
+  } catch (error) {
+    // Revertir la transacción en caso de error
+    await db.run("ROLLBACK");
+    console.error("Error en el controlador eliminarAlumno:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
