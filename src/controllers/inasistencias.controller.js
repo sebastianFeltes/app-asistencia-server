@@ -64,7 +64,8 @@ function verificarFechaEnRango(fechaInicioStr, fechaFinStr, fechaConsultaStr) {
 // Esta función se ejecutará a las 19:00 horas todos los días
 export function timer() {
   db.all("", (err, rows) =>{})
-  const horarios = ["30 12 * * *", "30 16 * * *", "00 19 * * *", "17 01 * * *"];
+  const horarios = ["30 12 * * *", "30 16 * * *", "00 19 * * *"];
+  console.log("timer line 68",horarios[3])
   horarios.forEach((horario) => {
     cron.schedule(horario, () => {
       // Lógica para ejecutar la función a las 19:00 horas de cada día
@@ -74,7 +75,7 @@ export function timer() {
       const horaActual = obtenerHoraActual();
       var partes = fechaActual.split("-");
       const fechaActualConBarras =
-        partes[0] + "/" + partes[1] + "/" + partes[2];
+        partes[0] + "-" + partes[1] + "-" + partes[2];
       console.log("timer func line 77");
       console.log(fechaActualConBarras);
 
@@ -98,9 +99,9 @@ export function timer() {
             var partes = fechaActual.split("-");
             const fechaActualModificada =
               partes[2] + "-" + partes[1] + "-" + partes[0];
-            // console.log("map cursos line 100");
-            // console.log(e);
-            // console.log(fechaActualModificada);
+            console.log("map cursos line 100");
+            console.log(e);
+            console.log(fechaActualModificada);
             //VERIFICAR FECHA EN RANGO DE DIA DE INICIO Y FINAL DE CURSOS
             const verificacarFecha = verificarFechaEnRango(
               fechaInicio,
@@ -111,6 +112,8 @@ export function timer() {
             console.log(verificacarFecha);
             if (verificacarFecha) {
               console.log("dentro de fechas");
+              //FIX: en la query agregar que se ejecute siempre y cuando la fecha actual está
+              //dentro de la fecha de inicio y la fecha de finalización
               db.all(selectRelCursoAlumnos, [id_curso], (err, rows) => {
                 if (err) {
                   return console.log(err);

@@ -114,6 +114,7 @@ export async function buscarAlumnoPorId(req, res) {
         const fechaActual = obtenerFechaActual();
 
         console.log(codAsistencia, id_relacion, fechaActual);
+        
         db.all(
           selectAsistenciaByIdRelacion,
           [id_relacion, fechaActual],
