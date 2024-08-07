@@ -215,7 +215,9 @@ export function modificarDatosAlumno(req, res) {
                 }
               );
             }); */
-            return res.json({ message: "alumno modificado, sin eliminacion de curso" });
+            return res.json({
+              message: "alumno modificado, sin eliminacion de curso",
+            });
             //console.log("response")
           }
         );
@@ -296,5 +298,61 @@ export async function eliminarAlumno(req, res) {
     await db.run("ROLLBACK");
     console.error("Error en el controlador eliminarAlumno:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function buscarAlumnosController(req, res) {
+  const { query } = req.query;
+  // console.log(query);
+
+  if (!query) {
+    return res.status(400).json({ error: "Consulta requerida" });
+  }
+  // Consulta para obtener la cantidad total de alumnos (para paginación)
+  const totalAlumnosQuery = "SELECT COUNT(*) AS count FROM alumnos";
+  const totalAlumnos = await new Promise((resolve, reject) => {
+    db.get(totalAlumnosQuery, (err, row) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(row.count);
+    });
+  });
+  try {
+    const selectAlumnos = `SELECT * FROM alumnos AL INNER JOIN detalle_alumnos DAL ON AL.id_alumno = DAL.id_alumno WHERE AL.apellido LIKE ? OR AL.nombre LIKE ? OR AL.nro_legajo LIKE ? OR AL.nro_dni LIKE ?`;
+    db.all(
+      selectAlumnos,
+      [`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`],
+      async (err, rows) => {
+        if (err) {
+          console.log(err.message);
+          return res.status(500).json({ mensaje: err.message });
+        }
+
+        try {
+          const dataAlumnos = await Promise.all(
+            rows.map(async (alumno) => {
+              const cursos = await getCursosAlumno(alumno.id_alumno);
+              return { ...alumno, cursos };
+            })
+          );
+          // console.log(res);
+          return res.status(200).json({
+            total: totalAlumnos, // Total de alumnos en la base de datos
+            data: dataAlumnos,
+          });
+        } catch (error) {
+          console.log(error);
+          return res
+            .status(500)
+            .json({ mensaje: "Error al obtener datos de los alumnos" });
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ mensaje: "Error al obtener datos de los alumnos" });
   }
 }
