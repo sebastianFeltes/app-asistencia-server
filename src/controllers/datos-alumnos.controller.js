@@ -319,10 +319,14 @@ export async function buscarAlumnosController(req, res) {
     });
   });
   try {
-    const selectAlumnos = `SELECT * FROM alumnos AL INNER JOIN detalle_alumnos DAL ON AL.id_alumno = DAL.id_alumno WHERE AL.apellido LIKE ? OR AL.nombre LIKE ? OR AL.nro_legajo LIKE ? OR AL.nro_dni LIKE ?`;
+    const selectAlumnos = `SELECT AL.*, DAL.* FROM alumnos AL 
+    INNER JOIN detalle_alumnos DAL ON AL.id_alumno = DAL.id_alumno 
+    INNER JOIN cursos C ON RCA.id_curso = C.id_curso
+    INNER JOIN rel_curso_alumnos RCA ON AL.id_alumno = RCA.id_alumno
+    WHERE AL.apellido LIKE ? OR AL.nombre LIKE ? OR AL.nro_legajo LIKE ? OR AL.nro_dni LIKE ? OR C.nombre LIKE ?`;
     db.all(
       selectAlumnos,
-      [`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`],
+      [`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`],
       async (err, rows) => {
         if (err) {
           console.log(err.message);
